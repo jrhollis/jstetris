@@ -13,7 +13,7 @@ class Input {
             Input.keyPress = e.keyCode;
         }
         
-        Input.keyState[''+e.keyCode] = 1;
+        Input.keyState[''+e.keyCode] = e.keyCode;
         Input.lastKey = e.keyCode;
         if (e.keyCode >= 37 && e.keyCode <= 40) {
             e.preventDefault();
@@ -36,6 +36,10 @@ class Input {
         Input.keyDown = true;
     }
 
+    static isKeyDown(key) {
+        return Input.keyState[''+key];
+    }
+
     static onKeyUp(e) {
         delete Input.keyState[e.keyCode];
         delete Input.lastKey;
@@ -43,19 +47,9 @@ class Input {
     }
 
     static watch() {
-        //two frame delay- stop- change direction
-        var nextDirection;
-        if (Input.keyState['37']) {
-            nextDirection = Vector.LEFT;
-        } else if (Input.keyState['39']) {
-            nextDirection = Vector.RIGHT;
-        } else if (Input.keyState['38']) {
-            nextDirection = Vector.UP;
-        } else if (Input.keyState['40']) {
-            nextDirection = Vector.DOWN;
-        }
-        Input.buffer.unshift(nextDirection);
-        if (Input.buffer.length == 3) {
+        //one frame delay-
+        Input.buffer.unshift(Input.lastKey);
+        if (Input.buffer.length == 2) {
             Input.buffer.pop();
         }
     }
@@ -69,8 +63,8 @@ class Input {
 
 
     static readBuffer() {
-        if (Input.buffer.length == 2) {
-            return Input.buffer[1];
+        if (Input.buffer.length == 1) {
+            return Input.buffer[0];
         } else {
             return null;
         }

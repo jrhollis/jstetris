@@ -19,6 +19,7 @@ class GameMenuScene extends Scene {
         Scene.prototype.tick.call(this);
         var keyPress = Input.readKeyPress();
         if (this.menuItem == 0) {
+            var oldGameType = this.gameType;
             this.gameTypeFlashCtr = (this.gameTypeFlashCtr + 1) % 32;
             if (keyPress == 39 || keyPress == 37) {
                 if (this.gameType == 'A') {
@@ -31,8 +32,9 @@ class GameMenuScene extends Scene {
             } else if (keyPress == 65) {
                 this.menuItem = 1;
                 this.gameTypeFlashCtr = 0;
-            } else if (keyPress == 13) {
-                //go straight to game
+            } 
+            if (oldGameType != this.gameType) {
+                Sound.playOnce('MenuBeep');
             }
         } else {
             this.musicTypeFlashCtr = (this.musicTypeFlashCtr + 1) % 32;
@@ -94,6 +96,7 @@ class GameMenuScene extends Scene {
         if (keyPress == 13)  {
             this.menuItem = 0;
             Sound.stop(Sound.musicType+'type');
+            Sound.playOnce('MenuConfirm');
             if (this.gameType == 'A') {
                 SceneManager.pushScene(SceneManager.ATypeLevelSelectScene);
             } else {

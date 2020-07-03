@@ -7,7 +7,7 @@ RESOURCE.sprites.src = 'res/tetris.png';
 //create the game screen canvas
 var SCREEN = document.createElement('canvas'),
     context = SCREEN.getContext('2d'),
-    scale = 2.0;
+    scale = 4.0;
 SCREEN.id = "screen";
 SCREEN.width = 160*scale;
 SCREEN.height = 144*scale;
@@ -23,6 +23,20 @@ SCREEN.style.background = '#f9f9f9';
 SCREEN.style.border = 'solid';
 document.body.appendChild(SCREEN);
 
+
+
+var TOP_SCORES = {
+    A: [
+        {name: 'JOHN', score: 300},
+        {name: 'A', score: 200},
+        {name: 'BRI', score: 100}
+    ],
+    B: [
+        {name: 'ERIN', score: 600},
+        {name: 'SOPHIE', score: 500},
+        {name: 'A', score: 400}
+    ]
+}
 
 
 function loop() {

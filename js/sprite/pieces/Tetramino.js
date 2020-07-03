@@ -40,7 +40,12 @@ class Tetramino extends Sprite{
     }
 
     rotate(clockwise, skip) {
-        if (!this.rotations) return;
+        if (!this.rotations) {
+            //play the sound anyway
+            console.log('no rotations')
+            Sound.forcePlay('PieceRotate');
+            return;
+        }
         if (clockwise) {
             this.rotationIndex = (this.rotationIndex + 1) % this.rotations.length;
         } else {
@@ -58,6 +63,8 @@ class Tetramino extends Sprite{
         if (!skip && board.collide(this)) {
             //reverse to rotation
             this.rotate(!clockwise, true);
+        } else if (!skip) {
+            Sound.forcePlay('PieceRotate');
         }
     }
 
@@ -67,6 +74,8 @@ class Tetramino extends Sprite{
         if (!skip && board.collide(this)) {
             //reverse the move if it causes a collision
             this.move(Vector.inverse(direction), true);
+        } else if (!skip) {
+            Sound.forcePlay('PieceMove');
         }
     }
 

@@ -21,10 +21,13 @@ row clear points
 class GameScene extends Scene {
 
     static PIECES = [OrangeRicky, BlueRicky, Hero, Smashboy, ClevelandZ, RhodeIslandZ, Teewee];
+    static DELAY_AUTO_SHIFT =[1, 22, 8]; //delay 1 frame, then 22, then 9 for all others
 
     constructor(context, gameType, level, high) {
         super(context);
         this.board = new Board(this, gameType);
+        this.gameType = gameType;
+        this.startLevel = level;
         this.level = level;
         this.levelText = new Text(this, ""+this.level, 17*8, 7*8, 'right');
         this.high = high;
@@ -38,6 +41,8 @@ class GameScene extends Scene {
         this.previewPiece = this.chooseRandomPiece();
         this.onDeckPiece = this.pieceRandomizer();
         this.gravityTickCtr = 0;
+        this.dasIndex = 0;  //delay auto shift pointer
+        this.dasFrameCtr = 0;
         this.rowClearTimer = new Timer();
     }
 
@@ -74,6 +79,39 @@ class GameScene extends Scene {
         this.onDeckPiece = this.pieceRandomizer();
     }
 
+
+
+    gameOver() {
+        var topScores = TOP_SCORES[this.gameType];
+        console.log(this.gameType, topScores);
+        Sound.stop(Sound.musicType+'type');
+        SceneManager.popScene();
+        //adjust high scores if necessary - tie breaker: old score gets the win
+        //if there's a highscore, set the previous scene to enterScore = # in top 3
+        var levelSelectScene = SceneManager.currentScene(),
+            place = 1;
+        for (var i = 0; topScores.length; i++) {
+            if (this.score <= topScores[i].score) {
+                place++;
+            } else {
+                //got a spot
+                break;
+            }
+        }
+        if (place < 4) {
+            //got a spot- insert it into top scores for this game type
+            topScores.splice(place-1, 0, {
+                name: 'A',
+                score: this.score
+            });
+            //remove 4th place
+            topScores.pop();
+            //move other scores below this one down
+            levelSelectScene.enterScore = place;
+        }
+    }
+
+
     tick() {
         Sound.playLoop(Sound.musicType + 'type');
 
@@ -82,6 +120,36 @@ class GameScene extends Scene {
         
         Scene.prototype.tick.call(this);
         var keyPress = Input.readKeyPress();
+        if (Input.isKeyDown(40)) {
+            //give hard drop control priority
+            //hard drop piece drops a row every 3 frames
+            //keep track of where hard drop started for scoring
+            if (!this.hardDrop) {
+                this.gravityTickCtr = 0;
+                this.hardDrop = this.currentPiece.tileOrigin.y;
+            }
+        } else if (Input.isKeyDown(37)) {
+            if (this.dasFrameCtr == GameScene.DELAY_AUTO_SHIFT[this.dasIndex]) {
+                this.dasIndex = Math.min(++this.dasIndex, 2);
+                this.dasFrameCtr = 0;
+                //move the piece
+                this.currentPiece.move(Vector.LEFT);
+            } else {
+                this.dasFrameCtr++;
+            }
+        } else if (Input.isKeyDown(39)) {
+            if (this.dasFrameCtr == GameScene.DELAY_AUTO_SHIFT[this.dasIndex]) {
+                this.dasIndex = Math.min(++this.dasIndex, 2);
+                this.dasFrameCtr = 0;
+                //move the piece
+                this.currentPiece.move(Vector.RIGHT);
+            } else {
+                this.dasFrameCtr++;
+            }
+        } else {
+            this.dasFrameCtr = 0;
+            this.dasIndex = 0;
+        }
         if (keyPress == 83) {
             Sound.stop(Sound.musicType + 'type');
             SceneManager.popScene();
@@ -89,14 +157,15 @@ class GameScene extends Scene {
             this.currentPiece.rotate(false);
         } else if (keyPress == 81) {
             this.currentPiece.rotate(true);
-        } else if (keyPress == 37) {
-            //move left
-            this.currentPiece.move(Vector.LEFT);
-        } else if (keyPress == 39) {
-            this.currentPiece.move(Vector.RIGHT);
-        } else if (keyPress == 40) {
-            //piece drops a row every 3 frames
         }
+
+        if (!Input.isKeyDown(40)) {
+            //hard drop stopped
+            if (this.hardDrop) {
+                delete this.hardDrop;    
+            }
+        }
+
         this.gravityTickCtr++;
         if (this.gravityTickCtr == this.gravity) {
             //make the piece fall
@@ -107,19 +176,38 @@ class GameScene extends Scene {
                 //lock in place
                 var clearRows = this.board.lock(this.currentPiece);
                 //TODO: hard drop points?
+                if (this.hardDrop) {
+                    var hardDistance = this.currentPiece.tileOrigin.y - this.hardDrop;
+                    this.score += hardDistance;
+                    this.hardDrop = false;
+                }
 
                 if (clearRows.length) {
                     //do clear animations
+                    if (clearRows.length == 4) {
+                        Sound.playOnce('Tetris'); 
+                    } else {
+                        Sound.playOnce('RowClear'); //this sound includes the piece lock fx
+                    }
                     this.rowClearTimer.start(77, () => {
                         this.score += this.getPoints(clearRows.length);
                         this.lines += clearRows.length;
+                        var oldLevel = this.level;
+                        this.level = this.startLevel + Math.floor(this.lines / 10);
                         this.board.clearRows(clearRows);
                         this.currentPiece = this.previewPiece;
                         this.dropPiece();
+                        Sound.playOnce('RowDrop', () => {  
+                            //on to a new level
+                            if (oldLevel != this.level) {
+                                Sound.playOnce('LevelUp');
+                            }
+                        });
                     });
                 } else {
                     this.currentPiece = this.previewPiece;
                     this.dropPiece();
+                    Sound.playOnce('PieceLock');
                 }
             }
         }
@@ -154,7 +242,7 @@ class GameScene extends Scene {
     }
 
     get gravity() {
-        if (this.fastDrop) return 3;
+        if (this.hardDrop) return 3;
         switch(this.level) {
             case 0:
                 return 53;

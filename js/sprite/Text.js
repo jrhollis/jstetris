@@ -1,18 +1,39 @@
 class Text extends Sprite {
+    static MAP = [
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ.-* ",
+        '0123456789'
+    ];
+
+    static nextLetter(letter) {
+        var letterIndex = Text.MAP[0].indexOf(letter);
+        if (letterIndex >= 0) {
+            letterIndex = (letterIndex + 1) % Text.MAP[0].length;
+            return this.MAP[0][letterIndex]
+        }
+    }
+
+    static previousLetter(letter) {
+        var letterIndex = Text.MAP[0].indexOf(letter);
+        if (letterIndex >= 0) {
+            letterIndex = (letterIndex - 1);
+            if (letterIndex < 0) {
+                letterIndex = Text.MAP[0].length-1;
+            }
+            return this.MAP[0][letterIndex];
+        }
+    }
+
+
     constructor(scene, text, x, y, align) {
         super(scene, x, y);
-        this.textMap = [
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ.-* ",
-            '0123456789'
-        ]
         this.text = text;
         this.align = align || 'left';
         this.flashCtr = 0;
     }
 
     getLetterCoordinates(letter) {
-        for (var i = 0; i < this.textMap.length; i++) {
-            var letterIndex = this.textMap[i].indexOf(letter);
+        for (var i = 0; i < Text.MAP.length; i++) {
+            var letterIndex = Text.MAP[i].indexOf(letter);
             if (letterIndex > -1) {
                 return { x: letterIndex * 8, y: i * 8 };
             }
@@ -20,7 +41,7 @@ class Text extends Sprite {
     }
 
     draw() {
-        if (this.hidden) return;
+        if (this.hidden || !this.text) return;
 
         if (this.flashCtr < 16) {
             var context = this.context;
