@@ -27,14 +27,14 @@ document.body.appendChild(SCREEN);
 
 var TOP_SCORES = {
     A: [
-        {name: 'JOHN', score: 300},
-        {name: 'A', score: 200},
-        {name: 'BRI', score: 100}
+        // {name: 'JOHN', score: 300},
+        // {name: 'A', score: 200},
+        // {name: 'BRI', score: 100}
     ],
     B: [
-        {name: 'ERIN', score: 600},
-        {name: 'SOPHIE', score: 500},
-        {name: 'A', score: 400}
+        // {name: 'ERIN', score: 600},
+        // {name: 'SOPHIE', score: 500},
+        // {name: 'A', score: 400}
     ]
 }
 
@@ -62,6 +62,8 @@ window.requestAnimationFrame(loop);
 var creditsScene = new CreditsScene(context);
 // var titleScene = new TitleScene(context);
 SceneManager.GameMenuScene = new GameMenuScene(context);
+SceneManager.PauseScene = new PauseScene(context);
+SceneManager.LoseScene = new LoseScene(context);
 SceneManager.ATypeLevelSelectScene = new ATypeLevelSelectScene(context);
 SceneManager.BTypeLevelSelectScene = new BTypeLevelSelectScene(context);
 SceneManager.pushScene(creditsScene);

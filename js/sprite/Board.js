@@ -3,21 +3,50 @@ class Board extends Sprite {
     static HEIGHT = 18;
     static WIDTH = 10;
 
-    constructor(context, gameType) {
+    constructor(context, gameType, level, high) {
         super(context, 0, 0, 160, 144);
         this.gameType = gameType;
+        this.level = level;
+        this.high = high;
 
         this.grid = [];
         for (var y = 0; y < 18; y++) {
             this.addBlankRow();
         }
 
+        if (this.gameType == 'B') {
+            this.randomFill();
+        }
         this.clearFlashTicks = 0;
     }
 
     addBlankRow() {
         this.grid.unshift([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
     }
+
+    randomFill() {
+        var tiles = [0, 20, 26, 27, 28, 29, 30, 31, 32, 33];
+        for (var y = 0; y < this.high * 2; y++) {
+            for (var x = 0; x < Board.WIDTH; x++) {
+                var tile = tiles[Math.max(Math.floor((Math.random() * 9)) - 2, 0)];
+                this.grid[(Board.HEIGHT-1)-y][x] = tile;
+            }
+        }
+    }
+
+
+    curtainCover(row) {
+        for (var x = 0; x < this.grid[row].length; x++) {
+            this.grid[row][x] = 32;
+        }
+    }
+
+    curtainReveal(row) {
+        for (var x = 0; x < this.grid[row].length; x++) {
+            this.grid[row][x] = 0;
+        }
+    }
+
 
     collide(piece) {
         var collision = false,
@@ -45,12 +74,11 @@ class Board extends Sprite {
         for (var i = 0; i < piece.tiles.length; i++) {
             var t = piece.tiles[i],
                 cell = Vector.add(pieceOrigin, t);
-            if (piece.isHero) {
-                //special case for Hero pieces
-                this.grid[cell.y][cell.x] = piece.getTileType(i);
-            } else {
-                this.grid[cell.y][cell.x] = piece.tileType; //TODO; make different tiles
+            //if this cell is already occupied, then it means the game's over
+            if (this.grid[cell.y][cell.x]) {
+                return -1;
             }
+            this.grid[cell.y][cell.x] = t.t;
         }
 
         //if line(s), drop all rows -  could just check the rows where the piece locked, but just do the whole board for simplicity
@@ -65,11 +93,6 @@ class Board extends Sprite {
             }
             if (clear) {
                 clearRows.push(y);
-                //splice out this row and add blank row to the top
-                // this.grid.splice(y, 1);
-                // this.addRow();
-                //flash row(s) 3 times solid gray
-                //blank out row for 8 frames, then drop pieces
             }
         }
         //there are rows to clear. start the flash timer
@@ -96,43 +119,9 @@ class Board extends Sprite {
         //draw locked tiles
         for (var y = 0; y < this.grid.length; y++) {
             for (var x = 0; x < this.grid[y].length; x++) {
-                var tile = this.grid[y][x],
-                    tileCoords = { x: 168, y: tile * 8 };
-                //stupid special case for Hero piece
-                switch (tile) {
-                    case 20:
-                        tileCoords.y = 24;
-                        break;
-                    case 21:
-                        tileCoords = {
-                            x: 176,
-                            y: 24
-                        };
-                        break;
-                    case 22:
-                        tileCoords = {
-                            x: 184,
-                            y: 24
-                        };
-                        break;
-                    case 30:
-                        tileCoords.y = 32;
-                        break;
-                    case 31:
-                        tileCoords = {
-                            x: 176,
-                            y: 32
-                        };
-                        break;
-                    case 32:
-                        tileCoords = {
-                            x: 184,
-                            y: 32
-                        };
-                        break;
-                }
+                var tile = this.grid[y][x];
                 if (tile) {
-                    this.context.drawImage(RESOURCE.sprites, tileCoords.x, tileCoords.y, 8, 8, (x * 8) + 16, y * 8, 8, 8);
+                    this.context.drawImage(RESOURCE.sprites, tile*8, 16, 8, 8, (x * 8) + 16, y * 8, 8, 8);
                 }
             }
         }

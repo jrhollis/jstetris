@@ -31,7 +31,8 @@ class Sound {
         LevelUp: { start: 187.287, end: 187.82},
         RowClear: { start: 184.104, end: 185.157},
         Tetris: { start: 185.531, end: 186.479},
-        RowDrop: { start: 188.323, end: 188.550 }
+        RowDrop: { start: 188.323, end: 188.550 },
+        Lose: { start: 189.193, end: 191.751 }
     };
 
     //play a sfx in a loop
@@ -81,8 +82,10 @@ class Sound {
         this.sfx[fx].playing = true;
         this.sfx[fx].source = source;
         source.addEventListener('ended', () => {
+            if (!this.sfx[fx].source.stopped) {
+                if (cb) cb.call(this);
+            }
             delete this.sfx[fx].source;
-            if (cb) cb.call(this);
         });
         return source;
     }
@@ -90,6 +93,7 @@ class Sound {
     //stop a currently-playing sfx
     static stop(fx) {
         if (this.sfx[fx] && this.sfx[fx].source) {
+            this.sfx[fx].source.stopped = true;
             this.sfx[fx].source.stop();
         }
     }

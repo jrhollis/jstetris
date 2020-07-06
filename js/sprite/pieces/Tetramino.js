@@ -40,22 +40,28 @@ class Tetramino extends Sprite{
     }
 
     rotate(clockwise, skip) {
-        if (!this.rotations) {
+        if (!this.constructor.ROTATIONS) {
             //play the sound anyway
             console.log('no rotations')
             Sound.forcePlay('PieceRotate');
             return;
         }
+        var rotations = this.constructor.ROTATIONS,
+            spawnTiles = this.constructor.SPAWN_TILES;
+
         if (clockwise) {
-            this.rotationIndex = (this.rotationIndex + 1) % this.rotations.length;
+            this.rotationIndex = (this.rotationIndex + 1) % rotations.length;
         } else {
-            !this.rotationIndex--?this.rotationIndex=(this.rotations.length-1):null;
+            !this.rotationIndex--?this.rotationIndex=(rotations.length-1):null;
         }
-        var rotation = this.rotations[this.rotationIndex];
-        for (var i = 0; i < this.spawnTiles.length; i++) {
+        
+        var rotation = rotations[this.rotationIndex];
+
+        for (var i = 0; i < spawnTiles.length; i++) {
             this.tiles[i] = {
-                x: (rotation[0][0] * this.spawnTiles[i].x) + (rotation[0][1] * this.spawnTiles[i].y),
-                y: (rotation[1][0] * this.spawnTiles[i].x) + (rotation[1][1] * this.spawnTiles[i].y),
+                x: (rotation[0][0] * spawnTiles[i].x) + (rotation[0][1] * spawnTiles[i].y),
+                y: (rotation[1][0] * spawnTiles[i].x) + (rotation[1][1] * spawnTiles[i].y),
+                t: spawnTiles[i].t
             }
         }
         //collision detect with board- if colliding with something, revert the rotation
@@ -89,7 +95,7 @@ class Tetramino extends Sprite{
                 x: this.origin.x + (t.x*8) + 16,
                 y: this.origin.y + (t.y*8)
             }
-            this.context.drawImage(RESOURCE.sprites, this.texture.x, this.texture.y, 8, 8, tileCoords.x, tileCoords.y, 8, 8);
+            this.context.drawImage(RESOURCE.sprites, t.t*8, 16, 8, 8, tileCoords.x, tileCoords.y, 8, 8);
         });
     }
 }

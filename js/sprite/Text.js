@@ -1,7 +1,7 @@
 class Text extends Sprite {
     static MAP = [
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ.-* ",
-        '0123456789'
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ.-x ",
+        '0123456789_'
     ];
 
     static nextLetter(letter) {
@@ -24,10 +24,10 @@ class Text extends Sprite {
     }
 
 
-    constructor(scene, text, x, y, align) {
+    constructor(scene, text, x, y, style) {
         super(scene, x, y);
         this.text = text;
-        this.align = align || 'left';
+        this.style = style || 'left';
         this.flashCtr = 0;
     }
 
@@ -48,13 +48,16 @@ class Text extends Sprite {
             for (var i = 0; i < this.text.length; i++) {
                 var letterCoords = this.getLetterCoordinates(this.text[i]),
                     alignX = 0;
-                if (this.align == 'right') {
+                if (this.style == 'right') {
                     alignX = ((this.text.length - 1) * 8);
                 }
                 context.drawImage(RESOURCE.sprites,
                     160 + letterCoords.x, letterCoords.y, 8, 8,
                     this.x + (i * 8) - alignX, this.y, 8, 8
                 );
+                if (this.style == 'dotted') {
+                    context.drawImage(RESOURCE.sprites, 240, 8, 8, 8, this.x + (i * 8), this.y+8, 8, 8);
+                }
             }
         }
         if (this.flash) {
