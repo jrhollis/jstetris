@@ -67,7 +67,7 @@ class BTypeLevelSelectScene extends Scene {
                     this.level = checkLevel;
                 }
                 if (this.level != oldLevel) {
-                    Sound.playOnce('MenuBeep');
+                    Sound.forcePlay('MenuBeep');
                 }
                 if (keyPress == 65) {
                     this.menuItem = 1;
@@ -94,7 +94,7 @@ class BTypeLevelSelectScene extends Scene {
                     this.high = checkHigh;
                 }
                 if (this.high != oldHigh) {
-                    Sound.playOnce('MenuBeep');
+                    Sound.forcePlay('MenuBeep');
                 }
                 if (keyPress == 83) {
                     this.menuItem = 0;
@@ -111,11 +111,11 @@ class BTypeLevelSelectScene extends Scene {
             var name = TOP_SCORES['B'][this.enterScore - 1].name,
                 currentLetter = name[this.cursorLocation];
             if (keyPress == 40) {
-                Sound.playOnce('MenuBeep');
+                Sound.forcePlay('MenuBeep');
                 currentLetter = Text.previousLetter(currentLetter);
                 TOP_SCORES['B'][this.enterScore - 1].name = name.substr(0, this.cursorLocation) + currentLetter + name.substr(this.cursorLocation + 1)
             } else if (keyPress == 38) {
-                Sound.playOnce('MenuBeep');
+                Sound.forcePlay('MenuBeep');
                 currentLetter = Text.nextLetter(currentLetter);
                 TOP_SCORES['B'][this.enterScore - 1].name = name.substr(0, this.cursorLocation) + currentLetter + name.substr(this.cursorLocation + 1)
             } else if (keyPress == 65) {
@@ -183,7 +183,7 @@ class BTypeLevelSelectScene extends Scene {
 
         if (this.enterScore && this.cursorBlink >= 7) {
             //draw a rectangle over the current letter to blank it out and make it appear to flash
-            this.context.fillStyle = '#ffffff';
+            this.context.fillStyle = '#80832c';
             this.context.fillRect((this.cursorLocation * 8) + (4 * 8), (this.enterScore * 8) + (12 * 8), 8, 8);
         }
     }

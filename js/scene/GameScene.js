@@ -59,6 +59,7 @@ class GameScene extends Scene {
         this.gravityTickCtr = 0;
         this.dasIndex = 0;  //delay auto shift pointer
         this.dasFrameCtr = 0;
+        this.endGameTimer = new Timer();
         this.rowClearTimer = new Timer();
         this.curtainTimer = new Timer();
     }
@@ -150,7 +151,13 @@ class GameScene extends Scene {
         }
         if (this.gameComplete) {
             //B type, show point counting
-            SceneManager.replaceScene(new BTypeGameOverScene(this.context, this.level, this.scoring));
+            if (this.level == 9) {
+                //show the party
+                SceneManager.replaceScene(new BTypeWinScene(this.context, this.high, this.scoring));
+            } else {
+                //just go to scoring
+                SceneManager.replaceScene(new BTypeGameOverScene(this.context, this.level, this.scoring, this.high));
+            }
         } else {
             SceneManager.replaceScene(SceneManager.LoseScene);
         }
@@ -163,6 +170,7 @@ class GameScene extends Scene {
 
         //game is held up while row clears
         if (this.rowClearTimer.tick()) { return; }
+        if (this.endGameTimer.tick()) { return; }
 
         //game ending stuff
         this.curtainTimer.tick();
@@ -183,6 +191,8 @@ class GameScene extends Scene {
         Sound.playLoop(Sound.musicType + 'type');
 
         if (keyPress == 13) {
+            Sound.stop(Sound.musicType + 'type');
+            Sound.playOnce('PauseGame');
             SceneManager.pushScene(SceneManager.PauseScene)
             return;
         }
@@ -273,6 +283,12 @@ class GameScene extends Scene {
                             if (this.lines <= 0) {
                                 //end the game
                                 this.gameComplete = true;
+                                this.endGameTimer.start(120);
+                                Sound.stop(Sound.musicType + 'type');
+                                //play the win tune after a half second while the action is paused
+                                setTimeout(() => {
+                                    Sound.playOnce('Win');
+                                }, 500);
                             }
                         }
                         this.board.clearRows(clearRows);
@@ -298,8 +314,7 @@ class GameScene extends Scene {
     draw() {
         Scene.prototype.draw.call(this);
 
-        this.currentPiece.draw();
-        this.board.draw();
+        this.board.draw(this.currentPiece);
         this.linesText.text = "" + this.lines;
         this.linesText.draw();
         this.levelText.text = "" + this.level;

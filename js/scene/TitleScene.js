@@ -6,7 +6,7 @@ class TitleScene extends Scene {
             this.soundLoaded = true;
             Sound.playOnce('intro');
         });
-        this.arrow = new Sprite(this, 1*8, 14*8, 8, 8, 248, 8);
+        this.arrow = new Sprite(this, 1*8, 14*8, 8, 8, 272, 8);
     }
 
     tick() {

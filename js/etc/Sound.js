@@ -6,7 +6,7 @@ class Sound {
     static initialize(cb) {
         var AudioContext = window.AudioContext || window.webkitAudioContext;
         this.context = new AudioContext();
-        this.loadSound('res/sfx.ogg').then(buffer => {
+        this.loadSound('res/sfx_2.ogg').then(buffer => {
             this.sounds = buffer
             cb.call(this);
         });
@@ -16,23 +16,32 @@ class Sound {
     static playing = {}
 
     //time offsets for each sound effect in the sfx.ogg file
-    static sfx = {  
-        intro: { start: 0, end: 38.68 },
-        Atype: { start: 39.695, end: 78.234 },
-        Btype: { start: 79.235, end: 114.594 },
-        Ctype: { start: 115.594, end: 153.97 },
-        EnterScoreIntro: {start: 154.989, end: 156.194 },
-        EnterScore: { start: 156.194, end: 181.915 },
-        MenuBeep: { start: 182.296, end: 182.340 },
-        MenuConfirm: { start: 186.745, end: 186.786 },
-        PieceMove: { start: 182.737, end: 182.77 },
-        PieceRotate: { start: 183.032, end: 183.339 },
-        PieceLock: { start: 183.597, end: 183.802 },
-        LevelUp: { start: 187.287, end: 187.82},
-        RowClear: { start: 184.104, end: 185.157},
-        Tetris: { start: 185.531, end: 186.479},
-        RowDrop: { start: 188.323, end: 188.550 },
-        Lose: { start: 189.193, end: 191.751 }
+    static sfx = {
+        intro: { start: 0.743, end: 39.364 },
+        Atype: { start: 39.804, end: 78.414 },
+        Btype: { start: 78.623, end: 113.982 },
+        Ctype: { start: 114.423, end: 152.781 },
+        EnterScoreIntro: { start: 153.076, end: 154.284 },
+        EnterScore: { start: 154.284, end: 180.024 },
+        MenuBeep: { start: 180.345, end: 180.484 },
+        MenuConfirm: { start: 180.712, end: 180.766 },
+        PieceMove: { start: 182.319, end: 182.366 },
+        PieceRotate: { start: 181.056, end: 181.365 },
+        PieceLock: { start: 181.773, end: 181.986 },
+        LevelUp: { start: 191.134, end: 191.688 },
+        RowClear: { start: 182.677, end: 183.732 },
+        Tetris: { start: 189.925, end: 190.869 },
+        RowDrop: { start: 184.049, end: 184.292 },
+        Lose: { start: 184.599, end: 187.157 },
+        Win: { start: 187.679, end: 188.61 },
+        PauseGame: { start: 188.971, end: 189.465 },
+        BWin0: { start: 192.374, end: 195.605 },
+        BWin1: { start: 197, end: 200 },
+        BWin2: { start: 201.27, end: 204.525 },
+        BWin3: { start: 205.5, end: 208.8 },
+        BWin4: { start: 209, end: 216 },
+        BWin5: { start: 216.818, end: 229.785 },
+        Rocket: { start: 229.8, end: 271.3 }
     };
 
     //play a sfx in a loop

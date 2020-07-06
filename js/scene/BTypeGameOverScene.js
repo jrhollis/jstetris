@@ -1,8 +1,9 @@
 class BTypeGameOverScene extends Scene {
-    constructor(context, level, scoring) {
+    constructor(context, level, scoring, high) {
         super(context);
         this.curtain = Board.HEIGHT;
         this.scoring = scoring;
+        this.high = high;
         this.level = level;
         this.multiplier = this.level + 1;
         this.totalScore = (this.scoring[1] * this.multiplier * 40) +
@@ -19,6 +20,11 @@ class BTypeGameOverScene extends Scene {
         this.tetrisScore = new Text(this, '0', 10 * 8, 11 * 8, 'right');
         this.dropsScore = new Text(this, '0', 10 * 8, 13 * 8, 'right');
         this.stageScore = new Text(this, '0', 10 * 8, 17 * 8, 'right');
+
+        this.levelText = new Text(this, "" + this.level, 16 * 8, 2 * 8, 'right');
+        this.highText = new Text(this, "" + this.high, 16 * 8, 5 * 8, 'right');
+        this.linesText = new Text(this, "0", 17 * 8, 10 * 8, 'right');
+
 
         //80 ticks from curtain up to counting starting
         this.startCountTimer = new Timer();
@@ -51,7 +57,8 @@ class BTypeGameOverScene extends Scene {
             this.dropsScore,
             new Text(this, '__________', 2 * 8, 15 * 8, 'dotted'),
             new Text(this, 'THIS STAGE', 2 * 8, 16 * 8),
-            this.stageScore
+            this.stageScore,
+            this.levelText, this.highText, this.linesText
         ]
     }
 
@@ -98,6 +105,7 @@ class BTypeGameOverScene extends Scene {
                         texts[1].text = "" + (points * this.currentCount * this.multiplier);
                     }    
                     this.totalScore += (points * this.multiplier);
+                    Sound.forcePlay('MenuConfirm');
                 }
                 //update total score
                 this.stageScore.text = "" +this.totalScore;
@@ -112,8 +120,8 @@ class BTypeGameOverScene extends Scene {
     }
 
     draw() {
-        //don't clear underneath
-        this.context.drawImage(RESOURCE.sprites, 336, 144, 160, 144, 16, (this.curtain * 8), 160, 144);
+        var cOffset = this.curtain*8;
+        this.context.drawImage(RESOURCE.sprites, 160, 288+cOffset, 160, 144-cOffset, 0, cOffset, 160, 144-cOffset);
         this.drawables.forEach(t => {
             if (t.y >= this.curtain * 8) {
                 t.draw();

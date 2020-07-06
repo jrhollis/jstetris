@@ -24,7 +24,7 @@ class Timer {
     tick() {
         if (this.ticks > 0) {
             this.ticks--;
-            if (this.ticks == 0) {
+            if (this.ticks == 0 && this.callback) {
                 //time is up
                 this.callback.call(this);
             }

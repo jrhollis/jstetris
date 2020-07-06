@@ -19,7 +19,7 @@ context.imageSmoothingEnabled = false;
 context.scale(scale, scale)
 
 //draw black background on canvas
-SCREEN.style.background = '#f9f9f9';
+SCREEN.style.background = '#80832c';
 SCREEN.style.border = 'solid';
 document.body.appendChild(SCREEN);
 

@@ -27,9 +27,16 @@ class Board extends Sprite {
     randomFill() {
         var tiles = [0, 20, 26, 27, 28, 29, 30, 31, 32, 33];
         for (var y = 0; y < this.high * 2; y++) {
+            var hasEmpty = false;   //make sure this doesn't fill a complete row
             for (var x = 0; x < Board.WIDTH; x++) {
                 var tile = tiles[Math.max(Math.floor((Math.random() * 9)) - 2, 0)];
                 this.grid[(Board.HEIGHT-1)-y][x] = tile;
+                if (!tile) hasEmpty = true;
+            }
+            if (!hasEmpty) {
+                //if it filled a complete row, randomly pick a cell to blank out
+                var cell = Math.floor((Math.random()*Board.WIDTH));
+                this.grid[(Board.HEIGHT-1)-y][cell] = 0;
             }
         }
     }
@@ -113,9 +120,12 @@ class Board extends Sprite {
         }
     }
 
-    draw() {
-        var boardSpriteY = this.gameType == "A" ? 432 : 576;
+    draw(currentPiece) {
+        var boardSpriteY = this.gameType == "A" ? 432 : 288;
         this.context.drawImage(RESOURCE.sprites, 160, boardSpriteY, this.width, this.height, 0, 0, this.width, this.height);
+        
+        currentPiece.draw();
+
         //draw locked tiles
         for (var y = 0; y < this.grid.length; y++) {
             for (var x = 0; x < this.grid[y].length; x++) {
@@ -134,9 +144,9 @@ class Board extends Sprite {
                     for (var r = 0; r < this.clearing.length; r++) {
                         var y = this.clearing[r];
                         if (this.clearFlashTicks >= 60) {
-                            this.context.fillStyle = '#f9f9f9';
+                            this.context.fillStyle = '#80832c';
                         } else {
-                            this.context.fillStyle = '#a9a9a9';
+                            this.context.fillStyle = '#5f7541';
                         }
                         this.context.fillRect(16, y*8, 80, 8);
                     }
