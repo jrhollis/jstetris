@@ -60,7 +60,7 @@ class BTypeWinScene extends Scene {
             this.curtain--;
             if (this.curtain == 0) {
                 Sound.playOnce('BWin'+this.high, () => {
-                    SceneManager.replaceScene(new BTypeGameOverScene(this.context, 9, this.scoring, this.high));
+                    SceneManager.replaceScene(new BTypeScoringScene(this.context, 9, this.scoring, this.high));
                     if (this.high == 5) {
                         //shuttle scene
                         SceneManager.pushScene(new RocketScene(this.context, 4));

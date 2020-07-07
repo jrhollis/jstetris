@@ -1,4 +1,4 @@
-class BTypeGameOverScene extends Scene {
+class BTypeScoringScene extends Scene {
     constructor(context, level, scoring, high) {
         super(context);
         this.curtain = Board.HEIGHT;

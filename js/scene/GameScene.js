@@ -176,13 +176,13 @@ class GameScene extends Scene {
                 SceneManager.replaceScene(new BTypeWinScene(this.context, this.scoring, this.high));
             } else {
                 //just go to scoring
-                SceneManager.replaceScene(new BTypeGameOverScene(this.context, this.level, this.scoring, this.high));
+                SceneManager.replaceScene(new BTypeScoringScene(this.context, this.level, this.scoring, this.high));
             }
         } else {
             //rocket scene?
             if (this.gameType == 'A') {
                 var rocket = 0;
-                if (this.score >= 10000) {
+                if (this.score >= 100000) {
                     rocket = 1;
                 } else if (this.score >= 150000) {
                     rocket = 2;
@@ -261,6 +261,10 @@ class GameScene extends Scene {
             SceneManager.popScene();
         } 
 
+        if (keyPress == 16) {
+            this.hidePreviewPiece = !this.hidePreviewPiece
+        }
+
         this.gravityTickCtr++;
         if (this.gravityTickCtr == this.gravity) {
             //make the piece fall
@@ -297,15 +301,13 @@ class GameScene extends Scene {
                             this.score += this.getPoints(clearRows.length);
                         } else {
                             this.lines -= Math.max(clearRows.length, 0);
-                            if (this.lines <= 24) {
+                            if (this.lines <= 0) {
                                 //end the game
                                 this.gameComplete = true;
                                 this.endGameTimer.start(120);
                                 Sound.stopBGMusic();
                                 //play the win tune after a half second while the action is paused
-                                setTimeout(() => {
-                                    Sound.playOnce('Win');
-                                }, 500);
+                                setTimeout(() => {Sound.playOnce('Win');}, 500);
                             }
                         }
                         this.board.clearRows(clearRows);
@@ -340,7 +342,7 @@ class GameScene extends Scene {
         } else {
             this.highText.draw();
         }
-        if (this.previewPiece) this.previewPiece.draw();
+        if (this.previewPiece && !this.hidePreviewPiece) this.previewPiece.draw();
     }
 
     getTotalScore() {
