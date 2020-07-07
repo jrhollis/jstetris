@@ -23,21 +23,16 @@ class RocketScene extends Scene {
         }
 
 
-        this.exhaustLeft1 = new Sprite(this, 55, 106, 19, 7, 328, 605);
-        this.exhaustLeft1.hide();
-        this.exhaustRight1 = new Sprite(this, 86, 106, 19, 7, 328, 613);
-        this.exhaustRight1.hide();
+        //TODO: shuttle exhaust has a second sprite
+        this.drawables = [this.rocket];
 
-        this.drawables = [
-            this.rocket,
-            this.exhaustLeft1,
-            this.exhaustRight1
-        ];
-
-
+        this.leftExhaust = [];
+        this.rightExhaust = [];
         this.smallFlames = [];
         this.largeFlames = [];
         if (this.type < 4) {
+            this.leftExhaust.push(new Sprite(this, 55, 106, 19, 7, 328, 605));
+            this.rightExhaust.push(new Sprite(this, 86, 106, 19, 7, 328, 613));
             this.smallFlames.push(new Sprite(this, 77, 112, 6, 7, 351, 605));
             this.largeFlames.push(new Sprite(this, 76, 112, 8, 16, 350, 614));
         } else {
@@ -45,6 +40,11 @@ class RocketScene extends Scene {
                 this.smallFlames.push(new Sprite(this, 68+(i*8), 112, 8, 16, 350, 614));
                 this.largeFlames.push(new Sprite(this, 68+(i*8), 112, 8, 21, 350, 632));
             }
+            this.leftExhaust.push(new Sprite(this, 55, 106, 19, 7, 328, 605));
+            this.rightExhaust.push(new Sprite(this, 86, 106, 19, 7, 328, 613));
+            this.leftExhaust.push(new Sprite(this, 49, 98, 24, 15, 397, 645));
+            this.rightExhaust.push(new Sprite(this, 87, 98, 24, 15, 397, 662));
+
             this.arm = new Sprite(this, 64, 64, 12,16,333,580);
             //left tower
             this.drawables.unshift(new Sprite(this, 54, 60, 10,52,320,634));
@@ -53,6 +53,8 @@ class RocketScene extends Scene {
             this.speller = 0;
             this.drawables.push(this.congrats);
         }
+        this.leftExhaust.forEach(f => f.hide());
+        this.rightExhaust.forEach(f => f.hide());
         this.smallFlames.forEach(f => f.hide());
         this.largeFlames.forEach(f => f.hide());
 
@@ -61,12 +63,17 @@ class RocketScene extends Scene {
 
         this.animationCtr = 0;
         this.rocketCtr = 0;
+        this.exhaustCtr = 0;
     }
 
     tick() {
         this.tickCtr++;
         if (this.tickCtr == 200) {
             this.state = 'ignition';
+        } else if (this.tickCtr == 436) {
+            this.leftExhaust.forEach(e => e.hide());
+            this.rightExhaust.forEach(e => e.hide());
+            this.exhaustCtr = (this.exhaustCtr + 1) % this.leftExhaust.length;
         } else if (this.tickCtr == 780) {
             this.state = 'liftoff';
             if (this.type == 4) {
@@ -97,11 +104,11 @@ class RocketScene extends Scene {
 
         if (this.state == 'ignition') {
             if (Math.floor(this.animationCtr / 10) % 2) {
-                this.exhaustLeft1.hide();
-                this.exhaustRight1.hide();
+                this.leftExhaust[this.exhaustCtr].hide();
+                this.rightExhaust[this.exhaustCtr].hide();
             } else {
-                this.exhaustLeft1.show();
-                this.exhaustRight1.show();    
+                this.leftExhaust[this.exhaustCtr].show();
+                this.rightExhaust[this.exhaustCtr].show();
             }
         } else if (this.state == 'liftoff') {
             if (Math.floor(this.animationCtr / 6) % 2) {
@@ -119,6 +126,8 @@ class RocketScene extends Scene {
     draw() {
         this.context.drawImage(RESOURCE.sprites, 160, 576, 160, 144, 0, 0, 160, 144);
         this.drawables.forEach(d => d.draw());
+        this.leftExhaust.forEach(e => e.draw());
+        this.rightExhaust.forEach(e => e.draw());
         this.largeFlames.forEach(f => f.draw());
         this.smallFlames.forEach(f => f.draw());
     }
