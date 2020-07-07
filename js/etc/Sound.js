@@ -44,6 +44,25 @@ class Sound {
         Rocket: { start: 229.8, end: 271.3 }
     };
 
+    static musicType = 'A';
+    static playBGMusic(type) {
+        type = type || this.musicType;
+        if (type != this.musicType) {
+            this.stopBGMusic();
+        }
+        if (type != 'OFF') {
+            this.musicType = type;
+            this.playLoop(this.musicType + 'type');
+        } else {
+            this.musicType = null;
+        }
+    }
+    static stopBGMusic() {
+        if (this.musicType != 'OFF' || this.musicType == null) {
+            this.stop(this.musicType + 'type');
+        }
+    }
+
     //play a sfx in a loop
     static playLoop(fx) {
         //only play this clip once
