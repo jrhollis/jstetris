@@ -3,6 +3,7 @@ class LoseScene extends Scene {
         super(context);
 
         this.curtain = Board.HEIGHT;
+    
     }
 
     tick() {
@@ -10,8 +11,20 @@ class LoseScene extends Scene {
         //reveal the curtain if there is one
         if (this.curtain > 0) {
             this.curtain--;
-        } else {
-            if (keyPress == 13 || keyPress == 65) {
+            if (this.curtain == 0) {
+                setTimeout(() => {
+                    if (this.rocket) {
+                        SceneManager.pushScene(new RocketScene(this.context, this.rocket));
+                        delete this.rocket;
+                        this.forceExit = true;
+                        this.canExit = true;
+                    } else {
+                        this.canExit = true;
+                    }
+                }, 2000);
+            }
+        } else if (this.canExit) {
+            if (keyPress == 13 || keyPress == 65 || this.forceExit) {
                 SceneManager.popScene();
             }
         }

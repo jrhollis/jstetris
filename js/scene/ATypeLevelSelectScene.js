@@ -68,7 +68,6 @@ class ATypeLevelSelectScene extends Scene {
                 SceneManager.pushScene(new GameScene(this.context, 'A', this.level));
             }
         } else {
-            console.log('this.enterScore', this.enterScore)
             var name =  TOP_SCORES['A'][this.enterScore-1].name,
                 currentLetter = name[this.cursorLocation];
             if (keyPress == 40) {

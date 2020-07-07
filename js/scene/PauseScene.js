@@ -30,7 +30,7 @@ class PauseScene extends Scene {
 
 
     draw() {
-        this.context.drawImage(RESOURCE.sprites, 336, 144, 160, 144, 16, 0, 160, 144);
+        this.context.drawImage(RESOURCE.sprites, 176, 288, 80, 144, 16, 0, 80, 144);
         this.drawables.forEach(t => {
             t.draw();
         });

@@ -100,12 +100,13 @@ class GameScene extends Scene {
 
     lose() {
         //start curtain cover/reveal
-        Sound.playOnce('Lose');
         this.losing = true;
-        this.curtainTimer.start(60, () => {
+        this.curtainTimer.start(30, () => {
             delete this.previewPiece;
             this.curtain = 0;
             this.curtainStatus = 'cover';
+            Sound.playOnce('Lose');
+
             //curtain holds for 52 frames before raising
             this.curtainTimer.start(18, () => {
                 // curtain cover done
@@ -159,6 +160,16 @@ class GameScene extends Scene {
                 SceneManager.replaceScene(new BTypeGameOverScene(this.context, this.level, this.scoring, this.high));
             }
         } else {
+            //rocket scene?
+            var rocket = 0;
+            if (score >= 0) { //10000) {
+                rocket = 1;
+            } else if (score >= 150000) {
+                rocket = 2;
+            } else if (score >= 200000) {
+                rocket = 3;
+            }
+            SceneManager.LoseScene.rocket = rocket;
             SceneManager.replaceScene(SceneManager.LoseScene);
         }
     }
@@ -304,7 +315,7 @@ class GameScene extends Scene {
                 } else {
                     this.currentPiece = this.previewPiece;
                     this.dropPiece();
-                    Sound.playOnce('PieceLock');
+                    Sound.forcePlay('PieceLock');
                 }
             }
         }
