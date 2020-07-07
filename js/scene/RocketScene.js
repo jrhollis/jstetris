@@ -3,11 +3,12 @@ class RocketScene extends Scene {
         super(context);
 
         Sound.playOnce('Rocket', () => {
-            this.popScene();
+            //only makes it here for the shuttle
+            SceneManager.popScene();
         });
 
         this.type = type;
-        switch(this.type) {
+            switch(this.type) {
             case 1:
                 this.rocket = new Sprite(this, 72, 84, 16, 28, 346, 576);
                 break;
@@ -17,7 +18,9 @@ class RocketScene extends Scene {
             case 3:
                 this.rocket = new Sprite(this, 72, 56, 16, 56, 377, 576);
                 break;
-            }
+            case 4: 
+                this.rocket = new Sprite(this, 64, 48, 32, 64, 398, 576);
+        }
 
 
         this.exhaustLeft1 = new Sprite(this, 55, 106, 19, 7, 328, 605);
@@ -25,19 +28,34 @@ class RocketScene extends Scene {
         this.exhaustRight1 = new Sprite(this, 86, 106, 19, 7, 328, 613);
         this.exhaustRight1.hide();
 
-        this.smallFlame = new Sprite(this, 77, 112, 6, 7, 351, 605);
-        this.smallFlame.hide();
-        this.smallFlames = [this.smallFlame];
-
-        this.largeFlame = new Sprite(this, 76, 112, 8, 16, 350, 614);
-        this.largeFlame.hide();
-        this.largeFlames = [this.largeFlame];
-
         this.drawables = [
             this.rocket,
             this.exhaustLeft1,
             this.exhaustRight1
-        ]
+        ];
+
+
+        this.smallFlames = [];
+        this.largeFlames = [];
+        if (this.type < 4) {
+            this.smallFlames.push(new Sprite(this, 77, 112, 6, 7, 351, 605));
+            this.largeFlames.push(new Sprite(this, 76, 112, 8, 16, 350, 614));
+        } else {
+            for (var i = 0; i < 3; i++) {
+                this.smallFlames.push(new Sprite(this, 68+(i*8), 112, 8, 16, 350, 614));
+                this.largeFlames.push(new Sprite(this, 68+(i*8), 112, 8, 21, 350, 632));
+            }
+            this.arm = new Sprite(this, 64, 64, 12,16,333,580);
+            //left tower
+            this.drawables.unshift(new Sprite(this, 54, 60, 10,52,320,634));
+            this.drawables.unshift(this.arm);
+            this.congrats = new Text(this, "", 2*8, 3*8, 'underline');
+            this.speller = 0;
+            this.drawables.push(this.congrats);
+        }
+        this.smallFlames.forEach(f => f.hide());
+        this.largeFlames.forEach(f => f.hide());
+
         this.tickCtr = 0;
         this.state = 'launchpad';
 
@@ -51,10 +69,21 @@ class RocketScene extends Scene {
             this.state = 'ignition';
         } else if (this.tickCtr == 780) {
             this.state = 'liftoff';
-        } else if (this.tickCtr == 2130) {
+            if (this.type == 4) {
+                this.arm.hide();
+            }    
+        } else if (this.tickCtr == 2130 && this.type != 4) {
             Sound.stop('Rocket');
             SceneManager.popScene();
+        } else if (this.tickCtr >= 2136) {
+            //start writing congratulations
+            //6 frames per letter
+            if (!(this.tickCtr%6) && this.speller < "CONGRATULATIONS!".length) {
+                this.speller++;
+                this.congrats.text = "CONGRATULATIONS!".substr(0, this.speller);
+            }
         }
+
 
         if (this.tickCtr >= 770) {
             if (!this.rocketCtr) {

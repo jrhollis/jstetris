@@ -1,7 +1,7 @@
 class Text extends Sprite {
     static MAP = [
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ.-x ",
-        '0123456789_'
+        '0123456789_suha!'
     ];
 
     static nextLetter(letter) {
@@ -57,6 +57,8 @@ class Text extends Sprite {
                 );
                 if (this.style == 'dotted') {
                     context.drawImage(RESOURCE.sprites, 240, 8, 8, 8, this.x + (i * 8), this.y+8, 8, 8);
+                } else if (this.style == 'underline') {
+                    context.drawImage(RESOURCE.sprites, 256, 8, 8, 8, this.x + (i * 8), this.y+8, 8, 8);
                 }
             }
         }
