@@ -147,7 +147,7 @@ class GameScene extends Scene {
         //adjust high scores if necessary - tie breaker: old score gets the win
         //if there's a highscore, set the previous scene to enterScore = # in top 3
         var place = 1,
-            score = this.getTotalScore();
+            score = this.score;
         for (var i = 0; i < topScores.length; i++) {
             if (score <= topScores[i].score) {
                 place++;
@@ -295,10 +295,10 @@ class GameScene extends Scene {
                     this.rowClearTimer.start(77, () => {
                         this.scoring[clearRows.length]++;
                         var oldLevel = this.level;
+                        this.score += this.getPoints(clearRows.length);
                         if (this.gameType == 'A') {
                             this.lines += clearRows.length;
                             this.level = Math.max(this.startLevel, Math.floor(this.lines / 10));
-                            this.score += this.getPoints(clearRows.length);
                         } else {
                             this.lines -= Math.max(clearRows.length, 0);
                             if (this.lines <= 0) {
