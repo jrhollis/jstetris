@@ -85,8 +85,7 @@ class GameMenuScene extends Scene {
             this.menuItem = 0;
             Sound.stopBGMusic();
             Sound.playOnce('MenuConfirm');
-            SceneManager.LevelSelectScene.gameType = this.gameType;
-            SceneManager.pushScene(SceneManager.LevelSelectScene);
+            SceneManager.pushScene(SceneManager[this.gameType+'LevelSelectScene']);
         }
     }
 

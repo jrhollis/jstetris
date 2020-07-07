@@ -57,7 +57,8 @@ var creditsScene = new CreditsScene(context);
 SceneManager.GameMenuScene = new GameMenuScene(context);
 SceneManager.PauseScene = new PauseScene(context);
 SceneManager.LoseScene = new LoseScene(context);
-SceneManager.LevelSelectScene = new LevelSelectScene(context);
+SceneManager.ALevelSelectScene = new LevelSelectScene(context, 'A');
+SceneManager.BLevelSelectScene = new LevelSelectScene(context, 'B');
 SceneManager.pushScene(creditsScene);
 
 var pauseGame = false,

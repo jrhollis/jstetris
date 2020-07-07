@@ -1,16 +1,17 @@
 class LevelSelectScene extends Scene {
-    constructor(context) {
+    constructor(context, type) {
         super(context);
 
-        this.type = null;   //A or B type game
+        this.type = type;   //A or B type game
 
         this.highSpriteOffsetX = 13 * 8;
         this.highSpriteOffsetY = 6 * 8
         this.highText = new Text(this, "0", this.highSpriteOffsetX, this.highSpriteOffsetY);
         this.highFlashCtr = 0;
         this.high = 0;
+        (type=='A')?this.highText.hide():this.highText.show();
 
-        this.levelSpriteOffsetX = 5 * 8;
+        this.levelSpriteOffsetX = (type=='A'?5:2)*8;
         this.levelSpriteOffsetY = 6 * 8;
         this.levelText = new Text(this, "0", this.levelSpriteOffsetX, this.levelSpriteOffsetY);
         this.levelFlashCtr = 0;
@@ -34,13 +35,6 @@ class LevelSelectScene extends Scene {
         this.cursorLocation = 0;
     }
 
-    set gameType(type) {
-        if (this.type != type) {
-            this.levelSpriteOffsetX = (type=='A'?5:2)*8;
-            (type=='A')?this.highText.hide():this.highText.show();
-        }
-        this.type = type;
-    }
 
     tick() {
         if (this.enterScore && !this.musicStarted) {

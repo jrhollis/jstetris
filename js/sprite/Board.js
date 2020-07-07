@@ -69,7 +69,6 @@ class Board extends Sprite {
     }
 
     lock(piece) {
-        piece.y -= 8;   //shift back up one row to undo collision point
         //place tiles in grid
         var pieceOrigin = piece.tileOrigin;
         for (var i = 0; i < piece.tiles.length; i++) {

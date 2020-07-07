@@ -1,4 +1,4 @@
-class Tetramino extends Sprite{
+class Tetramino extends Sprite {
 
     static ROT_0 = [
         [1,0],
@@ -35,7 +35,7 @@ class Tetramino extends Sprite{
         return {x: Math.round(this.x/8), y: Math.round(this.y/8)}
     }
 
-    rotate(clockwise, skip) {
+    rotate(clockwise, skipCollision) {
         var rotations = this.constructor.ROTATIONS,
             spawnTiles = this.constructor.SPAWN_TILES;
 
@@ -55,27 +55,36 @@ class Tetramino extends Sprite{
         }
         //collision detect with board- if colliding with something, revert the rotation
         var board = this.scene.board;
-        if (!skip && board.collide(this)) {
-            //reverse to rotation
+        if (!skipCollision && board.collide(this)) {
+            //reverse to rotation and skip collision detection
             this.rotate(!clockwise, true);
-        } else if (!skip) {
+        } else if (!skipCollision) {
+            //valid rotation
             Sound.forcePlay('PieceRotate');
         }
     }
 
-    move(direction, skip) {
+    move(direction, skipCollision) {
         this.x += direction.x * 8;
         var board = this.scene.board;
-        if (!skip && board.collide(this)) {
-            //reverse the move if it causes a collision
+        if (!skipCollision && board.collide(this)) {
+            //reverse the move if it causes a collision and skip collision detection
             this.move(Vector.inverse(direction), true);
-        } else if (!skip) {
+        } else if (!skipCollision) {
+            //valid move
             Sound.forcePlay('PieceMove');
         }
     }
 
     fall() {
+        var board = this.scene.board;
         this.y += 8;
+        if (board.collide(this)) {
+            this.y -= 8;   //shift back up one row to undo collision point
+            return board.lock(this);
+        } else {
+            return false;
+        }
     }
 
     draw() {

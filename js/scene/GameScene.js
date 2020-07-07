@@ -167,7 +167,7 @@ class GameScene extends Scene {
             TOP_SCORES[this.gameType] = topScores.slice(0,3);
             localStorage['TOP_SCORES'] = JSON.stringify(TOP_SCORES);
             //move other scores below this one down
-            SceneManager.LevelSelectScene.enterScore = place;
+            SceneManager[this.gameType+'LevelSelectScene'].enterScore = place;
         }
         if (this.gameComplete) {
             //B type, show point counting
@@ -268,12 +268,11 @@ class GameScene extends Scene {
         this.gravityTickCtr++;
         if (this.gravityTickCtr == this.gravity) {
             //make the piece fall
-            this.currentPiece.fall();
             this.gravityTickCtr = 0;
             //collision detect with board
-            if (this.board.collide(this.currentPiece)) {
+            var clearRows = this.currentPiece.fall();
+            if (clearRows) {
                 //lock in place
-                var clearRows = this.board.lock(this.currentPiece);
                 if (clearRows == -1) {
                     //game over -- might need a timer here
                     Sound.stopBGMusic();
