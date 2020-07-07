@@ -6,7 +6,7 @@ class Sound {
     static initialize(cb) {
         var AudioContext = window.AudioContext || window.webkitAudioContext;
         this.context = new AudioContext();
-        this.loadSound('res/sfx_2.ogg').then(buffer => {
+        this.loadSound('res/sfx_lo.ogg').then(buffer => {
             this.sounds = buffer
             cb.call(this);
         });
