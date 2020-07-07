@@ -293,7 +293,7 @@ class GameScene extends Scene {
                         var oldLevel = this.level;
                         if (this.gameType == 'A') {
                             this.lines += clearRows.length;
-                            this.level = this.startLevel + Math.floor(this.lines / 10);
+                            this.level = Math.max(this.startLevel, Math.floor(this.lines / 10));
                             this.score += this.getPoints(clearRows.length);
                         } else {
                             this.lines -= Math.max(clearRows.length, 0);
