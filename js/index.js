@@ -24,19 +24,12 @@ SCREEN.style.border = 'solid';
 document.body.appendChild(SCREEN);
 
 
-
-var TOP_SCORES = {
-    A: [
-        // {name: 'JOHN', score: 300},
-        // {name: 'A', score: 200},
-        // {name: 'BRI', score: 100}
-    ],
-    B: [
-        // {name: 'ERIN', score: 600},
-        // {name: 'SOPHIE', score: 500},
-        // {name: 'A', score: 400}
-    ]
-}
+//load in scores
+localStorage['TOP_SCORES']
+var TOP_SCORES = localStorage['TOP_SCORES']?JSON.parse(localStorage['TOP_SCORES']):{
+    A: [],
+    B: []
+};
 
 
 function loop() {

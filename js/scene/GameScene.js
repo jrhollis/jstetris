@@ -166,6 +166,7 @@ class GameScene extends Scene {
             });
             //remove 4th place
             topScores = topScores.slice(0,3);
+            localStorage['TOP_SCORES'] = JSON.stringify(TOP_SCORES);
             //move other scores below this one down
             levelSelectScene.enterScore = place;
         }
