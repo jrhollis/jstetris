@@ -8,7 +8,6 @@ class BTypeWinScene extends Scene {
         this.level = 9;
         this.scoring = scoring;
 
-        //28 frames per sprite frame
         this.animator = 0;
 
         this.violin = new Sprite(this, 50, 5*8, 16, 16, 352, 104, 16, 16); //0

@@ -3,7 +3,6 @@ class SceneManager {
 
     static pushScene(scene) {
         this.stack.push(scene);
-        scene.onShow();
     }
 
     static popScene() {

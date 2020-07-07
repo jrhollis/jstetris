@@ -4,7 +4,6 @@ class GameMenuScene extends Scene {
         //default a-type
         this.gameType = 'A';
         this.gameTypeFlashCtr = 0;
-        Sound.musicType = 'A';
         this.musicTypeFlashCtr = 0;
 
         this.menuItem = 0;  //select game type, 1 == music type
@@ -15,7 +14,8 @@ class GameMenuScene extends Scene {
 
     tick() {
         //fire up the tune if it's not already going
-        Sound.playLoop(Sound.musicType + 'type');
+        // Sound.playLoop(Sound.musicType + 'type');
+        Sound.playBGMusic();
         Scene.prototype.tick.call(this);
         var keyPress = Input.readKeyPress();
         if (this.menuItem == 0) {
@@ -40,48 +40,36 @@ class GameMenuScene extends Scene {
             this.musicTypeFlashCtr = (this.musicTypeFlashCtr + 1) % 32;
             if (keyPress == 39) { //right
                 if (Sound.musicType == 'A') {
-                    Sound.stop('Atype');
-                    Sound.musicType = 'B';
-                    Sound.playLoop('Btype');
+                    Sound.playBGMusic('B');
                     this.typeMusic.x = 8*11;
                 } else if (Sound.musicType == 'C') {
                     //turn off songs
-                    Sound.musicType = null;
-                    Sound.stop('Ctype');
+                    Sound.playBGMusic('OFF');
                     this.typeMusic.x = 8*12;
                 }
             } else if (keyPress == 37) { //left
                 if (Sound.musicType == 'B') {
-                    Sound.stop('Btype');
-                    Sound.musicType = 'A';
-                    Sound.playLoop('Atype');
+                    Sound.playBGMusic('A');
                     this.typeMusic.x = 3*8;
                 } else if (Sound.musicType == null) {
-                    Sound.musicType = 'C';
-                    Sound.playLoop('Ctype');
+                    Sound.playBGMusic('C');
                     this.typeMusic.x = 3*8;
                 }
             } else if (keyPress == 40) { //down
                 if (Sound.musicType == 'A') {
-                    Sound.stop('Atype');
-                    Sound.musicType = 'C';
-                    Sound.playLoop('Ctype');
+                    Sound.playBGMusic('C');
                     this.typeMusic.y = 8*14;
                 } else if (Sound.musicType == 'B') {
-                    Sound.stop('Btype');
-                    Sound.musicType = null;
+                    Sound.playBGMusic('OFF');
                     this.typeMusic.x = 8*12;
                     this.typeMusic.y = 8*14;
                 }
             } else if (keyPress == 38) { //up
                 if (Sound.musicType == 'C') {
-                    Sound.stop('Ctype');
-                    Sound.musicType = 'A';
-                    Sound.playLoop('Atype');
+                    Sound.playBGMusic('A');
                     this.typeMusic.y = 8*12;
                 } else if (Sound.musicType == null) {
-                    Sound.musicType = 'B';
-                    Sound.playLoop('Btype');
+                    Sound.playBGMusic('B');
                     this.typeMusic.x = 8*11;
                     this.typeMusic.y = 8*12;
                 }
@@ -95,7 +83,7 @@ class GameMenuScene extends Scene {
         }
         if (keyPress == 13)  {
             this.menuItem = 0;
-            Sound.stop(Sound.musicType+'type');
+            Sound.stopBGMusic();
             Sound.playOnce('MenuConfirm');
             if (this.gameType == 'A') {
                 SceneManager.pushScene(SceneManager.ATypeLevelSelectScene);

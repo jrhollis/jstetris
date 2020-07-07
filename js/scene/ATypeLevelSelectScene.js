@@ -25,12 +25,12 @@ class ATypeLevelSelectScene extends Scene {
     tick() {
         if (this.enterScore && !this.musicStarted) {
             this.musicStarted = true;
-            Sound.stop(Sound.musicType + 'type');
+            Sound.stopBGMusic();
             Sound.playOnce('EnterScoreIntro', () => {
                 Sound.playLoop('EnterScore');
             });
         } else if (!this.enterScore) {
-            Sound.playLoop(Sound.musicType + 'type');
+            Sound.playBGMusic();
         } else if (this.enterScore) {
             this.cursorBlink = (this.cursorBlink + 1) % 14;
         }
@@ -61,7 +61,7 @@ class ATypeLevelSelectScene extends Scene {
             //cancel 83, gamescene 13
             if (keyPress == 83) {
                 this.enterScore = false;
-                Sound.stop(Sound.musicType+'type');
+                Sound.stopBGMusic();
                 SceneManager.popScene();
             } else if (keyPress == 13 || keyPress == 65) {
                 this.enterScore = false;

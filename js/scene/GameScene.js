@@ -143,7 +143,7 @@ class GameScene extends Scene {
     gameOver() {
         var topScores = TOP_SCORES[this.gameType];
         delete this.previewPiece;
-        Sound.stop(Sound.musicType + 'type');
+        Sound.stopBGMusic();
         //adjust high scores if necessary - tie breaker: old score gets the win
         //if there's a highscore, set the previous scene to enterScore = # in top 3
         var levelSelectScene = this.gameType == 'A' ? SceneManager.ATypeLevelSelectScene : SceneManager.BTypeLevelSelectScene,
@@ -222,10 +222,10 @@ class GameScene extends Scene {
             this.gameOver();
             return;
         }
-        Sound.playLoop(Sound.musicType + 'type');
+        Sound.playBGMusic();
 
         if (keyPress == 13) {
-            Sound.stop(Sound.musicType + 'type');
+            Sound.stopBGMusic();
             Sound.playOnce('PauseGame');
             SceneManager.pushScene(SceneManager.PauseScene)
             return;
@@ -256,7 +256,7 @@ class GameScene extends Scene {
         }
 
         if (keyPress == 83) { //enter
-            Sound.stop(Sound.musicType + 'type');
+            Sound.stopBGMusic();
             SceneManager.popScene();
         } 
 
@@ -271,7 +271,7 @@ class GameScene extends Scene {
                 var clearRows = this.board.lock(this.currentPiece);
                 if (clearRows == -1) {
                     //game over -- might need a timer here
-                    Sound.stop(Sound.musicType + 'type');
+                    Sound.stopBGMusic();
                     this.lose();
                     return;
                 }
@@ -300,7 +300,7 @@ class GameScene extends Scene {
                                 //end the game
                                 this.gameComplete = true;
                                 this.endGameTimer.start(120);
-                                Sound.stop(Sound.musicType + 'type');
+                                Sound.stopBGMusic();
                                 //play the win tune after a half second while the action is paused
                                 setTimeout(() => {
                                     Sound.playOnce('Win');

@@ -1,15 +1,13 @@
 class LoseScene extends Scene {
     constructor(context) {
         super(context);
-
         this.curtain = Board.HEIGHT;
-    
     }
 
     tick() {
         var keyPress = Input.readKeyPress();
-        //reveal the curtain if there is one
         if (this.curtain > 0) {
+            //reveal the curtain
             this.curtain--;
             if (this.curtain == 0) {
                 setTimeout(() => {
@@ -21,7 +19,7 @@ class LoseScene extends Scene {
                     } else {
                         this.canExit = true;
                     }
-                }, 2000);
+                }, 1800); //waits for Lose tune to end
             }
         } else if (this.canExit) {
             if (keyPress == 13 || keyPress == 65 || this.forceExit) {

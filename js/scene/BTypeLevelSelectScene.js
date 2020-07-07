@@ -35,12 +35,12 @@ class BTypeLevelSelectScene extends Scene {
     tick() {
         if (this.enterScore && !this.musicStarted) {
             this.musicStarted = true;
-            Sound.stop(Sound.musicType + 'type');
+            Sound.stopBGMusic();
             Sound.playOnce('EnterScoreIntro', () => {
                 Sound.playLoop('EnterScore');
             });
         } else if (!this.enterScore) {
-            Sound.playLoop(Sound.musicType + 'type');
+            Sound.playBGMusic();
         } else if (this.enterScore) {
             this.cursorBlink = (this.cursorBlink + 1) % 14;
         }
@@ -73,7 +73,7 @@ class BTypeLevelSelectScene extends Scene {
                     this.menuItem = 1;
                 } else if (keyPress == 83) {
                     //go back to game menu scene
-                    Sound.stop(Sound.musicType + 'type');
+                    Sound.stopBGMusic();
                     SceneManager.popScene();
                 }
             } else {
