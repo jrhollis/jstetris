@@ -165,7 +165,7 @@ class GameScene extends Scene {
                 score: score
             });
             //remove 4th place
-            topScores = topScores.slice(0,3);
+            TOP_SCORES[this.gameType] = topScores.slice(0,3);
             localStorage['TOP_SCORES'] = JSON.stringify(TOP_SCORES);
             //move other scores below this one down
             levelSelectScene.enterScore = place;
@@ -174,7 +174,7 @@ class GameScene extends Scene {
             //B type, show point counting
             if (this.level == 9) {
                 //show the party
-                SceneManager.replaceScene(new BTypeWinScene(this.context, this.high, this.scoring));
+                SceneManager.replaceScene(new BTypeWinScene(this.context, this.scoring, this.high));
             } else {
                 //just go to scoring
                 SceneManager.replaceScene(new BTypeGameOverScene(this.context, this.level, this.scoring, this.high));
@@ -296,7 +296,7 @@ class GameScene extends Scene {
                             this.score += this.getPoints(clearRows.length);
                         } else {
                             this.lines -= Math.max(clearRows.length, 0);
-                            if (this.lines <= 0) {
+                            if (this.lines <= 24) {
                                 //end the game
                                 this.gameComplete = true;
                                 this.endGameTimer.start(120);
