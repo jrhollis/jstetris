@@ -23,8 +23,8 @@ class Tetramino extends Sprite{
         this.context = scene.context;
         this.x = x;
         this.y = y;
-        this.tiles = [];
         this.rotationIndex = 0;
+		this.tiles = Array.from(this.constructor.SPAWN_TILES);
     }
 
     get origin() {
@@ -35,17 +35,7 @@ class Tetramino extends Sprite{
         return {x: Math.round(this.x/8), y: Math.round(this.y/8)}
     }
 
-    get tileType() {
-        return Math.floor(this.texture.y / 8);
-    }
-
     rotate(clockwise, skip) {
-        if (!this.constructor.ROTATIONS) {
-            //play the sound anyway
-            console.log('no rotations')
-            Sound.forcePlay('PieceRotate');
-            return;
-        }
         var rotations = this.constructor.ROTATIONS,
             spawnTiles = this.constructor.SPAWN_TILES;
 

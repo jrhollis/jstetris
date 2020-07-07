@@ -31,7 +31,7 @@ class RocketScene extends Scene {
 
         this.largeFlame = new Sprite(this, 76, 112, 8, 16, 350, 614);
         this.largeFlame.hide();
-        this.largeFlames = [this.largeFlame]
+        this.largeFlames = [this.largeFlame];
 
         this.drawables = [
             this.rocket,
@@ -47,7 +47,6 @@ class RocketScene extends Scene {
 
     tick() {
         this.tickCtr++;
-        console.log(this.tickCtr);
         if (this.tickCtr == 200) {
             this.state = 'ignition';
         } else if (this.tickCtr == 780) {

@@ -48,23 +48,17 @@ class Board extends Sprite {
         }
     }
 
-    curtainReveal(row) {
-        for (var x = 0; x < this.grid[row].length; x++) {
-            this.grid[row][x] = 0;
-        }
-    }
-
-
     collide(piece) {
         var collision = false,
             pieceOrigin = piece.tileOrigin;
         //check grid out of bounds
         piece.tiles.forEach(t => {
             var cell = Vector.add(pieceOrigin, t);
+            if (cell.y < 0) return;
             try {
                 if (this.grid[cell.y][cell.x]) {
                     collision = true;
-                } else if (cell.x < 0 || cell.x > 9 || cell.y > 18) {
+                } else if (cell.x < 0 || cell.x > 9) {
                     collision = true;
                 }
             } catch (ex) {
@@ -82,7 +76,7 @@ class Board extends Sprite {
             var t = piece.tiles[i],
                 cell = Vector.add(pieceOrigin, t);
             //if this cell is already occupied, then it means the game's over
-            if (this.grid[cell.y][cell.x]) {
+            if (cell.y < 0 || this.grid[cell.y][cell.x]) {
                 return -1;
             }
             this.grid[cell.y][cell.x] = t.t;
@@ -115,8 +109,10 @@ class Board extends Sprite {
     clearRows(rows) {
         for (var r = 0; r < rows.length; r++) {
             var y = rows[r];
+            //pull the completed row out of the grid
             this.grid.splice(y, 1);
-            this.addBlankRow();
+            //add empty row to top of grid
+            this.addBlankRow(); 
         }
     }
 
