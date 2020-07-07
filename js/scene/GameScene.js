@@ -94,6 +94,7 @@ class GameScene extends Scene {
 
     //drops the preview piece, puts on deck to preview, and chooses a new piece to put on deck
     releasePreviewPiece() {
+        this.currentPiece = this.previewPiece;
         this.currentPiece.x = 4 * 8;
         this.currentPiece.y = 1 * 8;
         this.previewPiece = this.onDeckPiece;
@@ -181,11 +182,11 @@ class GameScene extends Scene {
             //rocket scene?
             if (this.gameType == 'A') {
                 var rocket = 0;
-                if (score >= 10000) {
+                if (this.score >= 10000) {
                     rocket = 1;
-                } else if (score >= 150000) {
+                } else if (this.score >= 150000) {
                     rocket = 2;
-                } else if (score >= 200000) {
+                } else if (this.score >= 200000) {
                     rocket = 3;
                 }
                 SceneManager.LoseScene.rocket = rocket;
@@ -282,12 +283,9 @@ class GameScene extends Scene {
                 }
                 //did the lock result in a row clear? clearRows is an array with cleared row indexes
                 if (clearRows.length) {
-                    //do clear animations
-                    if (clearRows.length == 4) {
-                        Sound.playOnce('Tetris');
-                    } else {
-                        Sound.playOnce('RowClear'); //this sound includes the piece lock sfx
-                    }
+                    //do clear animations / sounds
+                    //this sound includes the piece lock sfx
+                    (clearRows.length == 4)?Sound.playOnce('Tetris'):Sound.playOnce('RowClear'); 
                     this.rowClearTimer.start(77, () => {
                         this.scoring[clearRows.length]++;
                         var oldLevel = this.level;
@@ -309,7 +307,6 @@ class GameScene extends Scene {
                             }
                         }
                         this.board.clearRows(clearRows);
-                        this.currentPiece = this.previewPiece;
                         this.releasePreviewPiece();
                         Sound.playOnce('RowDrop', () => {
                             //on to a new level
@@ -319,7 +316,6 @@ class GameScene extends Scene {
                         });
                     });
                 } else {
-                    this.currentPiece = this.previewPiece;
                     this.releasePreviewPiece();
                     Sound.forcePlay('PieceLock');
                 }
