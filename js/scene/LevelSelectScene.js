@@ -1,6 +1,8 @@
-class BTypeLevelSelectScene extends Scene {
+class LevelSelectScene extends Scene {
     constructor(context) {
         super(context);
+
+        this.type = null;   //A or B type game
 
         this.highSpriteOffsetX = 13 * 8;
         this.highSpriteOffsetY = 6 * 8
@@ -8,8 +10,8 @@ class BTypeLevelSelectScene extends Scene {
         this.highFlashCtr = 0;
         this.high = 0;
 
-        this.levelSpriteOffsetX = 2 * 8;
-        this.levelSpriteOffsetY = 6 * 8
+        this.levelSpriteOffsetX = 5 * 8;
+        this.levelSpriteOffsetY = 6 * 8;
         this.levelText = new Text(this, "0", this.levelSpriteOffsetX, this.levelSpriteOffsetY);
         this.levelFlashCtr = 0;
         this.level = 0;
@@ -30,6 +32,14 @@ class BTypeLevelSelectScene extends Scene {
         ];
         this.cursorBlink = 0;
         this.cursorLocation = 0;
+    }
+
+    set gameType(type) {
+        if (this.type != type) {
+            this.levelSpriteOffsetX = (type=='A'?5:2)*8;
+            (type=='A')?this.highText.hide():this.highText.show();
+        }
+        this.type = type;
     }
 
     tick() {
@@ -70,7 +80,11 @@ class BTypeLevelSelectScene extends Scene {
                     Sound.forcePlay('MenuBeep');
                 }
                 if (keyPress == 65) {
-                    this.menuItem = 1;
+                    if (this.type == 'A') {
+                        keyPress = 13;  //start the game
+                    } else {
+                        this.menuItem = 1;
+                    }
                 } else if (keyPress == 83) {
                     //go back to game menu scene
                     Sound.stopBGMusic();
@@ -105,19 +119,19 @@ class BTypeLevelSelectScene extends Scene {
             }
             //cancel 83, gamescene 13
             if (keyPress == 13) {
-                SceneManager.pushScene(new GameScene(this.context, 'B', this.level, this.high));
+                SceneManager.pushScene(new GameScene(this.context, this.type, this.level, this.high));
             }
         } else {
-            var name = TOP_SCORES['B'][this.enterScore - 1].name,
+            var name = TOP_SCORES[this.type][this.enterScore - 1].name,
                 currentLetter = name[this.cursorLocation];
             if (keyPress == 40) {
                 Sound.forcePlay('MenuBeep');
                 currentLetter = Text.previousLetter(currentLetter);
-                TOP_SCORES['B'][this.enterScore - 1].name = name.substr(0, this.cursorLocation) + currentLetter + name.substr(this.cursorLocation + 1)
+                TOP_SCORES[this.type][this.enterScore - 1].name = name.substr(0, this.cursorLocation) + currentLetter + name.substr(this.cursorLocation + 1)
             } else if (keyPress == 38) {
                 Sound.forcePlay('MenuBeep');
                 currentLetter = Text.nextLetter(currentLetter);
-                TOP_SCORES['B'][this.enterScore - 1].name = name.substr(0, this.cursorLocation) + currentLetter + name.substr(this.cursorLocation + 1)
+                TOP_SCORES[this.type][this.enterScore - 1].name = name.substr(0, this.cursorLocation) + currentLetter + name.substr(this.cursorLocation + 1)
             } else if (keyPress == 65) {
                 //go to next character or make a new one
                 if (this.cursorLocation < 5) {
@@ -125,7 +139,7 @@ class BTypeLevelSelectScene extends Scene {
                     Sound.playOnce('MenuConfirm');
                     if (this.cursorLocation == name.length) {
                         //add new character
-                        TOP_SCORES['B'][this.enterScore - 1].name += 'A';
+                        TOP_SCORES[this.type][this.enterScore - 1].name += 'A';
                     }
                 } else {
                     //out of letters
@@ -159,7 +173,11 @@ class BTypeLevelSelectScene extends Scene {
 
 
     draw() {
-        this.context.drawImage(RESOURCE.sprites, 0, 576, 160, 144, 0, 0, 160, 144);
+        if (this.type == 'A') {
+            this.context.drawImage(RESOURCE.sprites, 0, 432, 160, 144, 0, 0, 160, 144);
+        } else {
+            this.context.drawImage(RESOURCE.sprites, 0, 576, 160, 144, 0, 0, 160, 144);
+        }
         this.levelText.text = "" + this.level;
         var levelTextOffsets = this.levelIndicatorOffsets;
         this.levelText.x = this.levelSpriteOffsetX + levelTextOffsets.x;
@@ -174,9 +192,9 @@ class BTypeLevelSelectScene extends Scene {
         if (this.highFlashCtr < 16 || this.menuItem == 0 || this.enterScore) {
             this.highText.draw();
         }
-        for (var i = 0; i < TOP_SCORES['B'].length; i++) {
-            this.nameTexts[i].text = TOP_SCORES['B'][i].name;
-            this.scoreTexts[i].text = "" + TOP_SCORES['B'][i].score;
+        for (var i = 0; i < TOP_SCORES[this.type].length; i++) {
+            this.nameTexts[i].text = TOP_SCORES[this.type][i].name;
+            this.scoreTexts[i].text = "" + TOP_SCORES[this.type][i].score;
         }
         this.nameTexts.forEach(t => t.draw());
         this.scoreTexts.forEach(t => t.draw());

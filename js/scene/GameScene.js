@@ -146,8 +146,7 @@ class GameScene extends Scene {
         Sound.stopBGMusic();
         //adjust high scores if necessary - tie breaker: old score gets the win
         //if there's a highscore, set the previous scene to enterScore = # in top 3
-        var levelSelectScene = this.gameType == 'A' ? SceneManager.ATypeLevelSelectScene : SceneManager.BTypeLevelSelectScene,
-            place = 1,
+        var place = 1,
             score = this.getTotalScore();
         for (var i = 0; i < topScores.length; i++) {
             if (score <= topScores[i].score) {
@@ -168,7 +167,7 @@ class GameScene extends Scene {
             TOP_SCORES[this.gameType] = topScores.slice(0,3);
             localStorage['TOP_SCORES'] = JSON.stringify(TOP_SCORES);
             //move other scores below this one down
-            levelSelectScene.enterScore = place;
+            SceneManager.LevelSelectScene.enterScore = place;
         }
         if (this.gameComplete) {
             //B type, show point counting
@@ -236,6 +235,8 @@ class GameScene extends Scene {
         } else if (Input.isKeyDown(39)) {
             this.shiftPiece(Vector.RIGHT);
         } else if (Input.isKeyDown(40)) {
+            this.dasFrameCtr = 0;
+            this.dasIndex = 0;
             //hard drop piece drops a row every 3 frames
             if (!this.hardDrop) {
                 this.gravityTickCtr = 0;

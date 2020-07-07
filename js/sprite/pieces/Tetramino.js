@@ -46,7 +46,6 @@ class Tetramino extends Sprite{
         }
         
         var rotation = rotations[this.rotationIndex];
-
         for (var i = 0; i < spawnTiles.length; i++) {
             this.tiles[i] = {
                 x: (rotation[0][0] * spawnTiles[i].x) + (rotation[0][1] * spawnTiles[i].y),
