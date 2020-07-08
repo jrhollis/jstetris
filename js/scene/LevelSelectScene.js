@@ -4,6 +4,7 @@ class LevelSelectScene extends Scene {
 
         this.type = type;   //A or B type game
 
+        //high selection only for B type games
         this.highSpriteOffsetX = 13 * 8;
         this.highSpriteOffsetY = 6 * 8
         this.highText = new Text(this, "0", this.highSpriteOffsetX, this.highSpriteOffsetY);
@@ -11,6 +12,7 @@ class LevelSelectScene extends Scene {
         this.high = 0;
         (type=='A')?this.highText.hide():this.highText.show();
 
+        //level select is available in either game mode
         this.levelSpriteOffsetX = (type=='A'?5:2)*8;
         this.levelSpriteOffsetY = 6 * 8;
         this.levelText = new Text(this, "0", this.levelSpriteOffsetX, this.levelSpriteOffsetY);

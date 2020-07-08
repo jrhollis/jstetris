@@ -51,6 +51,7 @@ class GameScene extends Scene {
             4: 0,   //tetris
             5: 0 //hard drops
         }
+        this.canHardDrop = true;
         this.score = 0;
         this.currentPiece = this.chooseRandomPiece();
         this.currentPiece.x = 4 * 8;
@@ -234,7 +235,7 @@ class GameScene extends Scene {
             this.shiftPiece(Vector.LEFT);
         } else if (Input.isKeyDown(39)) {
             this.shiftPiece(Vector.RIGHT);
-        } else if (Input.isKeyDown(40)) {
+        } else if (Input.isKeyDown(40) && this.canHardDrop) {
             this.dasFrameCtr = 0;
             this.dasIndex = 0;
             //hard drop piece drops a row every 3 frames
@@ -248,6 +249,9 @@ class GameScene extends Scene {
             this.dasIndex = 0;
             //hard drop stopped
             delete this.hardDrop;
+            if (!Input.isKeyDown(40)) {
+                this.canHardDrop = true;
+            }
         }
         //piece rotation controls  a and q
         if (keyPress == 65) {
@@ -274,7 +278,8 @@ class GameScene extends Scene {
             if (clearRows) {
                 //lock in place
                 if (clearRows == -1) {
-                    //game over -- might need a timer here
+                    //game over
+                    Sound.forcePlay('PieceLock');
                     Sound.stopBGMusic();
                     this.lose();
                     return;
@@ -284,8 +289,9 @@ class GameScene extends Scene {
                     var hardDistance = this.currentPiece.tileOrigin.y - this.hardDrop;
                     this.scoring[5] += hardDistance;
                     this.score += hardDistance;
-                    this.hardDrop = false;
+                    delete this.hardDrop;
                 }
+                this.canHardDrop = false
                 //did the lock result in a row clear? clearRows is an array with cleared row indexes
                 if (clearRows.length) {
                     //do clear animations / sounds
