@@ -25,6 +25,7 @@ class LoseScene extends Scene {
             if (keyPress == 13 || keyPress == 65 || this.forceExit) {
                 SceneManager.popScene();
                 this.canExit = false;
+                this.forceExit = false;
                 this.curtain = Board.HEIGHT;
             }
         }
