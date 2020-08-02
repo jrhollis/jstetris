@@ -77,6 +77,7 @@ class GameScene extends Scene {
             chances = 3,
             attempt = 0;
         while (attempt < chances) {
+            //randomly choose a class of piece type to spawn next
             choice = Math.floor(Math.random() * 7);
             var currentIndex = GameScene.PIECES.indexOf(this.currentPiece.constructor),
                 previewIndex = GameScene.PIECES.indexOf(this.previewPiece.constructor),
@@ -96,8 +97,7 @@ class GameScene extends Scene {
     //drops the preview piece, puts on deck to preview, and chooses a new piece to put on deck
     releasePreviewPiece() {
         this.currentPiece = this.previewPiece;
-        this.currentPiece.x = 4 * 8;
-        this.currentPiece.y = 1 * 8;
+        this.currentPiece.tileOrigin = {x: 4, y: 1};
         this.previewPiece = this.onDeckPiece;
         this.previewPiece.show();
         this.onDeckPiece = this.pieceRandomizer();
@@ -142,18 +142,18 @@ class GameScene extends Scene {
 
     //check top scores and determine which scene to show next
     gameOver() {
-        var topScores = TOP_SCORES[this.gameType];
         delete this.previewPiece;
         Sound.stopBGMusic();
         //adjust high scores if necessary - tie breaker: old score gets the win
         //if there's a highscore, set the previous scene to enterScore = # in top 3
-        var place = 1,
+        var topScores = TOP_SCORES[this.gameType],
+            place = 1,
             score = this.score;
         for (var i = 0; i < topScores.length; i++) {
             if (score <= topScores[i].score) {
                 place++;
             } else {
-                //got a spot
+                //got a top spot
                 break;
             }
         }
@@ -166,7 +166,11 @@ class GameScene extends Scene {
             });
             //remove 4th place
             TOP_SCORES[this.gameType] = topScores.slice(0,3);
-            localStorage['TOP_SCORES'] = JSON.stringify(TOP_SCORES);
+            try {
+                localStorage['TOP_SCORES'] = JSON.stringify(TOP_SCORES);
+            } catch(ex) {
+                //no local storage availble
+            }
             //move other scores below this one down
             SceneManager[this.gameType+'LevelSelectScene'].enterScore = place;
         }

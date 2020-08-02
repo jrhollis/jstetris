@@ -31,6 +31,11 @@ class Tetramino extends Sprite {
         return {x: this.x, y: this.y};
     }
 
+    set tileOrigin(coord) {
+        this.x = coord.x * 8;
+        this.y = coord.y * 8;
+    }
+
     get tileOrigin() {
         return {x: Math.round(this.x/8), y: Math.round(this.y/8)}
     }

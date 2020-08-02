@@ -9,21 +9,27 @@ class Board extends Sprite {
         this.level = level;
         this.high = high;
 
+        //create an empty board
         this.grid = [];
         for (var y = 0; y < 18; y++) {
             this.addBlankRow();
         }
 
+        // B type game, fill with garbage
         if (this.gameType == 'B') {
             this.randomFill();
         }
+
+        //init animation counter
         this.clearFlashTicks = 0;
     }
 
+    //add a blank row to the top of the grid
     addBlankRow() {
         this.grid.unshift([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
     }
 
+    //for b-type game, fill the board with junk up to this.high*2 rows
     randomFill() {
         var tiles = [0, 20, 26, 27, 28, 29, 30, 31, 32, 33];
         for (var y = 0; y < this.high * 2; y++) {
@@ -34,31 +40,33 @@ class Board extends Sprite {
                 if (!tile) hasEmpty = true;
             }
             if (!hasEmpty) {
-                //if it filled a complete row, randomly pick a cell to blank out
-                var cell = Math.floor((Math.random()*Board.WIDTH));
-                this.grid[(Board.HEIGHT-1)-y][cell] = 0;
+                //if it filled a complete row, try making the row again
+                y--;
             }
         }
     }
 
-
+    //fills a row with the "curtain" block that covers the board at the end of a game
     curtainCover(row) {
         for (var x = 0; x < this.grid[row].length; x++) {
             this.grid[row][x] = 32;
         }
     }
 
+
+    //check if a piece collides with the sides of the board or another grid block
     collide(piece) {
         var collision = false,
             pieceOrigin = piece.tileOrigin;
-        //check grid out of bounds
         piece.tiles.forEach(t => {
             var cell = Vector.add(pieceOrigin, t);
             if (cell.y < 0) return;
             try {
                 if (this.grid[cell.y][cell.x]) {
+                    //check collision with another grid block
                     collision = true;
                 } else if (cell.x < 0 || cell.x > 9) {
+                    //check grid out of bounds
                     collision = true;
                 }
             } catch (ex) {
@@ -68,6 +76,7 @@ class Board extends Sprite {
         return collision;
     }
 
+    //lock the piece in place on the board. transfers the piece's tiles to the board grid
     lock(piece) {
         //place tiles in grid
         var pieceOrigin = piece.tileOrigin;
@@ -78,10 +87,11 @@ class Board extends Sprite {
             if (cell.y < 0 || this.grid[cell.y][cell.x]) {
                 return -1;
             }
+            //copy the tile type as the cell's value
             this.grid[cell.y][cell.x] = t.t;
         }
 
-        //if line(s), drop all rows -  could just check the rows where the piece locked, but just do the whole board for simplicity
+        //if line(s), drop all rows -  could just check the rows where the piece locked and up, but just do the whole board for simplicity
         var clearRows = [];
         for (var y = 0; y < Board.HEIGHT; y++) {
             var clear = true;
@@ -105,6 +115,7 @@ class Board extends Sprite {
         return clearRows;
     }
 
+
     clearRows(rows) {
         for (var r = 0; r < rows.length; r++) {
             var y = rows[r];
@@ -116,9 +127,13 @@ class Board extends Sprite {
     }
 
     draw(currentPiece) {
+        //A and B type games have slightly different background UIs
         var boardSpriteY = this.gameType == "A" ? 432 : 288;
+
+        //draw board background
         this.context.drawImage(RESOURCE.sprites, 160, boardSpriteY, this.width, this.height, 0, 0, this.width, this.height);
         
+        //the current moving piece
         currentPiece.draw();
 
         //draw locked tiles
@@ -131,6 +146,7 @@ class Board extends Sprite {
             }
         }
 
+        //clearing a row animation
         if (this.clearing) {
             this.clearFlashTicks++;  //flash on/off every ten frames, then white for 16 frames, then nothing, then drop
             //flash gray over clearing tiles

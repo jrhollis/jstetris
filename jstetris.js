@@ -105,21 +105,27 @@ class Sprite {
         this.level = level;
         this.high = high;
 
+        //create an empty board
         this.grid = [];
         for (var y = 0; y < 18; y++) {
             this.addBlankRow();
         }
 
+        // B type game, fill with garbage
         if (this.gameType == 'B') {
             this.randomFill();
         }
+
+        //init animation counter
         this.clearFlashTicks = 0;
     }
 
+    //add a blank row to the top of the grid
     addBlankRow() {
         this.grid.unshift([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
     }
 
+    //for b-type game, fill the board with junk up to this.high*2 rows
     randomFill() {
         var tiles = [0, 20, 26, 27, 28, 29, 30, 31, 32, 33];
         for (var y = 0; y < this.high * 2; y++) {
@@ -130,31 +136,33 @@ class Sprite {
                 if (!tile) hasEmpty = true;
             }
             if (!hasEmpty) {
-                //if it filled a complete row, randomly pick a cell to blank out
-                var cell = Math.floor((Math.random()*Board.WIDTH));
-                this.grid[(Board.HEIGHT-1)-y][cell] = 0;
+                //if it filled a complete row, try making the row again
+                y--;
             }
         }
     }
 
-
+    //fills a row with the "curtain" block that covers the board at the end of a game
     curtainCover(row) {
         for (var x = 0; x < this.grid[row].length; x++) {
             this.grid[row][x] = 32;
         }
     }
 
+
+    //check if a piece collides with the sides of the board or another grid block
     collide(piece) {
         var collision = false,
             pieceOrigin = piece.tileOrigin;
-        //check grid out of bounds
         piece.tiles.forEach(t => {
             var cell = Vector.add(pieceOrigin, t);
             if (cell.y < 0) return;
             try {
                 if (this.grid[cell.y][cell.x]) {
+                    //check collision with another grid block
                     collision = true;
                 } else if (cell.x < 0 || cell.x > 9) {
+                    //check grid out of bounds
                     collision = true;
                 }
             } catch (ex) {
@@ -164,6 +172,7 @@ class Sprite {
         return collision;
     }
 
+    //lock the piece in place on the board. transfers the piece's tiles to the board grid
     lock(piece) {
         //place tiles in grid
         var pieceOrigin = piece.tileOrigin;
@@ -174,10 +183,11 @@ class Sprite {
             if (cell.y < 0 || this.grid[cell.y][cell.x]) {
                 return -1;
             }
+            //copy the tile type as the cell's value
             this.grid[cell.y][cell.x] = t.t;
         }
 
-        //if line(s), drop all rows -  could just check the rows where the piece locked, but just do the whole board for simplicity
+        //if line(s), drop all rows -  could just check the rows where the piece locked and up, but just do the whole board for simplicity
         var clearRows = [];
         for (var y = 0; y < Board.HEIGHT; y++) {
             var clear = true;
@@ -201,6 +211,7 @@ class Sprite {
         return clearRows;
     }
 
+
     clearRows(rows) {
         for (var r = 0; r < rows.length; r++) {
             var y = rows[r];
@@ -212,9 +223,13 @@ class Sprite {
     }
 
     draw(currentPiece) {
+        //A and B type games have slightly different background UIs
         var boardSpriteY = this.gameType == "A" ? 432 : 288;
+
+        //draw board background
         this.context.drawImage(RESOURCE.sprites, 160, boardSpriteY, this.width, this.height, 0, 0, this.width, this.height);
         
+        //the current moving piece
         currentPiece.draw();
 
         //draw locked tiles
@@ -227,6 +242,7 @@ class Sprite {
             }
         }
 
+        //clearing a row animation
         if (this.clearing) {
             this.clearFlashTicks++;  //flash on/off every ten frames, then white for 16 frames, then nothing, then drop
             //flash gray over clearing tiles
@@ -276,6 +292,11 @@ class Sprite {
 
     get origin() {
         return {x: this.x, y: this.y};
+    }
+
+    set tileOrigin(coord) {
+        this.x = coord.x * 8;
+        this.y = coord.y * 8;
     }
 
     get tileOrigin() {
@@ -401,7 +422,8 @@ class Hero extends Tetramino {
 
     rotate(clockwise, skip) {
         Tetramino.prototype.rotate.call(this, clockwise, skip);
-        //have to orient the tile types along with the piece since the tile textures are orientation dependent in the Hero piece
+        //have to orient the tile types along with the piece since the end cap
+        //tile textures are orientation-dependent in the Hero piece
         for (var i = 0; i < this.tiles.length; i++) {
             this.tiles[i].t = Hero.SPAWN_TILES[i].t + (this.isHorizontal?0:3);
         }
@@ -477,7 +499,11 @@ class Hero extends Tetramino {
             return null;
         }
     }
-}class Sound {
+}
+
+//swallow the key strokes
+document.onkeydown = Input.onKeyDown;
+document.onkeyup = Input.onKeyUp;class Sound {
 
     // static mute = true;
     static mute = false;
@@ -1354,6 +1380,7 @@ class GameScene extends Scene {
             chances = 3,
             attempt = 0;
         while (attempt < chances) {
+            //randomly choose a class of piece type to spawn next
             choice = Math.floor(Math.random() * 7);
             var currentIndex = GameScene.PIECES.indexOf(this.currentPiece.constructor),
                 previewIndex = GameScene.PIECES.indexOf(this.previewPiece.constructor),
@@ -1373,8 +1400,7 @@ class GameScene extends Scene {
     //drops the preview piece, puts on deck to preview, and chooses a new piece to put on deck
     releasePreviewPiece() {
         this.currentPiece = this.previewPiece;
-        this.currentPiece.x = 4 * 8;
-        this.currentPiece.y = 1 * 8;
+        this.currentPiece.tileOrigin = {x: 4, y: 1};
         this.previewPiece = this.onDeckPiece;
         this.previewPiece.show();
         this.onDeckPiece = this.pieceRandomizer();
@@ -1419,18 +1445,18 @@ class GameScene extends Scene {
 
     //check top scores and determine which scene to show next
     gameOver() {
-        var topScores = TOP_SCORES[this.gameType];
         delete this.previewPiece;
         Sound.stopBGMusic();
         //adjust high scores if necessary - tie breaker: old score gets the win
         //if there's a highscore, set the previous scene to enterScore = # in top 3
-        var place = 1,
+        var topScores = TOP_SCORES[this.gameType],
+            place = 1,
             score = this.score;
         for (var i = 0; i < topScores.length; i++) {
             if (score <= topScores[i].score) {
                 place++;
             } else {
-                //got a spot
+                //got a top spot
                 break;
             }
         }
@@ -1443,7 +1469,11 @@ class GameScene extends Scene {
             });
             //remove 4th place
             TOP_SCORES[this.gameType] = topScores.slice(0,3);
-            localStorage['TOP_SCORES'] = JSON.stringify(TOP_SCORES);
+            try {
+                localStorage['TOP_SCORES'] = JSON.stringify(TOP_SCORES);
+            } catch(ex) {
+                //no local storage availble
+            }
             //move other scores below this one down
             SceneManager[this.gameType+'LevelSelectScene'].enterScore = place;
         }
@@ -1556,6 +1586,7 @@ class GameScene extends Scene {
                 //lock in place
                 if (clearRows == -1) {
                     //game over
+                    Sound.forcePlay('PieceLock');
                     Sound.stopBGMusic();
                     this.lose();
                     return;
@@ -1711,6 +1742,9 @@ class GameScene extends Scene {
         } else if (this.canExit) {
             if (keyPress == 13 || keyPress == 65 || this.forceExit) {
                 SceneManager.popScene();
+                this.canExit = false;
+                this.forceExit = false;
+                this.curtain = Board.HEIGHT;
             }
         }
     }
@@ -1954,11 +1988,19 @@ document.body.appendChild(SCREEN);
 
 
 //load in scores
-localStorage['TOP_SCORES']
-var TOP_SCORES = localStorage['TOP_SCORES']?JSON.parse(localStorage['TOP_SCORES']):{
-    A: [],
-    B: []
-};
+var TOP_SCORES;
+try {
+    TOP_SCORES = localStorage['TOP_SCORES']?JSON.parse(localStorage['TOP_SCORES']):{
+        A: [],
+        B: []
+    };
+} catch(ex) {
+    //no local storage available
+    TOP_SCORES = {
+        A:[],
+        B:[]
+    }
+}
 
 
 function loop() {
@@ -1992,6 +2034,3 @@ SceneManager.pushScene(creditsScene);
 
 var pauseGame = false,
     wasPaused = false;
-
-document.onkeydown = Input.onKeyDown;
-document.onkeyup = Input.onKeyUp;

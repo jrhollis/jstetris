@@ -25,11 +25,19 @@ document.body.appendChild(SCREEN);
 
 
 //load in scores
-localStorage['TOP_SCORES']
-var TOP_SCORES = localStorage['TOP_SCORES']?JSON.parse(localStorage['TOP_SCORES']):{
-    A: [],
-    B: []
-};
+var TOP_SCORES;
+try {
+    TOP_SCORES = localStorage['TOP_SCORES']?JSON.parse(localStorage['TOP_SCORES']):{
+        A: [],
+        B: []
+    };
+} catch(ex) {
+    //no local storage available
+    TOP_SCORES = {
+        A:[],
+        B:[]
+    }
+}
 
 
 function loop() {
@@ -63,6 +71,3 @@ SceneManager.pushScene(creditsScene);
 
 var pauseGame = false,
     wasPaused = false;
-
-document.onkeydown = Input.onKeyDown;
-document.onkeyup = Input.onKeyUp;

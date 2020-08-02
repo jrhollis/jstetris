@@ -11,7 +11,8 @@ class Hero extends Tetramino {
 
     rotate(clockwise, skip) {
         Tetramino.prototype.rotate.call(this, clockwise, skip);
-        //have to orient the tile types along with the piece since the tile textures are orientation dependent in the Hero piece
+        //have to orient the tile types along with the piece since the end cap
+        //tile textures are orientation-dependent in the Hero piece
         for (var i = 0; i < this.tiles.length; i++) {
             this.tiles[i].t = Hero.SPAWN_TILES[i].t + (this.isHorizontal?0:3);
         }
