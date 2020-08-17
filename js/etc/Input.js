@@ -1,11 +1,6 @@
 class Input {
     static lastKey = null;
-    static buffer = [];
     static keyState = {};
-
-    static reset() {
-        Input.buffer = [];
-    }
 
     static onKeyDown(e) {
         //read once
@@ -46,28 +41,11 @@ class Input {
         Input.keyDown = false;
     }
 
-    static watch() {
-        //one frame delay-
-        Input.buffer.unshift(Input.lastKey);
-        if (Input.buffer.length == 2) {
-            Input.buffer.pop();
-        }
-    }
-
 
     static readKeyPress() {
         var k = this.keyPress;
         delete this.keyPress;
         return k;
-    }
-
-
-    static readBuffer() {
-        if (Input.buffer.length == 1) {
-            return Input.buffer[0];
-        } else {
-            return null;
-        }
     }
 }
 

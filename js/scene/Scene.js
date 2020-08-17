@@ -3,8 +3,7 @@ class Scene {
         this.context = context;
     }
 
-    tick() {
-    }
+    tick() { }
 
     draw() {
         this.context.clearRect(0, 0, SCREEN.width, SCREEN.height);

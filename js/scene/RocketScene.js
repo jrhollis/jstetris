@@ -3,39 +3,34 @@ class RocketScene extends Scene {
         super(context);
 
         Sound.playOnce('Rocket', () => {
-            //only makes it here for the shuttle
+            //pop the scene when the music ends, only makes it this long for the shuttle
             SceneManager.popScene();
         });
 
         this.type = type;
-            switch(this.type) {
-            case 1:
-                this.rocket = new Sprite(this, 72, 84, 16, 28, 346, 576);
-                break;
-            case 2:
-                this.rocket = new Sprite(this, 72, 74, 16, 38, 360, 576);
-                break;
-            case 3:
-                this.rocket = new Sprite(this, 72, 56, 16, 56, 377, 576);
-                break;
-            case 4: 
-                this.rocket = new Sprite(this, 64, 48, 32, 64, 398, 576);
+        if (this.type == 1) {
+            this.rocket = new Sprite(this, 72, 84, 16, 28, 346, 576);
+        } else if (this.type == 2) {
+            this.rocket = new Sprite(this, 72, 74, 16, 38, 360, 576);
+        } else if (this.type == 3) {
+            this.rocket = new Sprite(this, 72, 56, 16, 56, 377, 576);
+        } else if (this.type == 4) {
+            this.rocket = new Sprite(this, 64, 48, 32, 64, 398, 576);
         }
 
-
-        //TODO: shuttle exhaust has a second sprite
         this.drawables = [this.rocket];
-
         this.leftExhaust = [];
         this.rightExhaust = [];
         this.smallFlames = [];
         this.largeFlames = [];
         if (this.type < 4) {
+            //rocket exhaust
             this.leftExhaust.push(new Sprite(this, 55, 106, 19, 7, 328, 605));
             this.rightExhaust.push(new Sprite(this, 86, 106, 19, 7, 328, 613));
             this.smallFlames.push(new Sprite(this, 77, 112, 6, 7, 351, 605));
             this.largeFlames.push(new Sprite(this, 76, 112, 8, 16, 350, 614));
         } else {
+            //shuttle exhaust
             for (var i = 0; i < 3; i++) {
                 this.smallFlames.push(new Sprite(this, 68+(i*8), 112, 8, 16, 350, 614));
                 this.largeFlames.push(new Sprite(this, 68+(i*8), 112, 8, 21, 350, 632));
@@ -49,6 +44,7 @@ class RocketScene extends Scene {
             //left tower
             this.drawables.unshift(new Sprite(this, 54, 60, 10,52,320,634));
             this.drawables.unshift(this.arm);
+            //congrats text
             this.congrats = new Text(this, "", 2*8, 3*8, 'underline');
             this.speller = 0;
             this.drawables.push(this.congrats);

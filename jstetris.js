@@ -261,7 +261,7 @@ class Sprite {
             }
         }
     }
-}class Tetramino extends Sprite {
+}class Tetromino extends Sprite {
 
     static ROT_0 = [
         [1,0],
@@ -369,51 +369,51 @@ XXX
 X00
 00X
 */
-class RhodeIslandZ extends Tetramino {
-    static ROTATIONS = [Tetramino.ROT_0, Tetramino.ROT_90];
+class RhodeIslandZ extends Tetromino {
+    static ROTATIONS = [Tetromino.ROT_0, Tetromino.ROT_90];
     static SPAWN_TILES = [{ x: -1, y: 0, t: 29 }, { x: 0, y: 0, t: 29 }, { x: 0, y: 1, t: 29 }, { x: 1, y: 1, t: 29 }];
 }/* "Z"
 00
  00
 */
-class ClevelandZ extends Tetramino {
-    static ROTATIONS = [Tetramino.ROT_0, Tetramino.ROT_90];
+class ClevelandZ extends Tetromino {
+    static ROTATIONS = [Tetromino.ROT_0, Tetromino.ROT_90];
     static SPAWN_TILES = [{ x: 1, y: 0, t: 31 }, { x: 0, y: 0, t: 31 }, { x: 0, y: 1, t: 31 }, { x: -1, y: 1, t: 31 }];
 }/* "T"
  0
 000
 */
-class Teewee extends Tetramino {
+class Teewee extends Tetromino {
     static SPAWN_TILES = [{ x: -1, y: 0, t: 30 }, { x: 0, y: 0, t: 30 }, { x: 1, y: 0, t: 30 }, { x: 0, y: 1, t: 30 }];
-    static ROTATIONS = [Tetramino.ROT_0, Tetramino.ROT_270, Tetramino.ROT_180, Tetramino.ROT_90];
+    static ROTATIONS = [Tetromino.ROT_0, Tetromino.ROT_270, Tetromino.ROT_180, Tetromino.ROT_90];
 }/* "O"
 x00
 x00
 xxx
 */
-class Smashboy extends Tetramino {
+class Smashboy extends Tetromino {
     //relative coordinates to the origin of this piece
     static SPAWN_TILES = [ {x: 0, y: 0, t: 28}, {x: 0, y: 1, t:28}, {x: 1, y: 1, t:28}, {x: 1, y: 0, t:28} ];
-    static ROTATIONS = [Tetramino.ROT_0];
+    static ROTATIONS = [Tetromino.ROT_0];
 }/* "J"
 0
 000
 */
-class BlueRicky extends Tetramino {
-	static ROTATIONS = [Tetramino.ROT_0, Tetramino.ROT_270, Tetramino.ROT_180, Tetramino.ROT_90];
+class BlueRicky extends Tetromino {
+	static ROTATIONS = [Tetromino.ROT_0, Tetromino.ROT_270, Tetromino.ROT_180, Tetromino.ROT_90];
 	static SPAWN_TILES = [{ x: -1, y: 0, t: 26 }, { x: 0, y: 0, t: 26 }, { x: 1, y: 0, t: 26 }, { x: 1, y: 1, t: 26 }];
 }/* "L"
   0
 000
 */
-class OrangeRicky extends Tetramino {
-	static ROTATIONS = [Tetramino.ROT_0, Tetramino.ROT_270, Tetramino.ROT_180, Tetramino.ROT_90];
+class OrangeRicky extends Tetromino {
+	static ROTATIONS = [Tetromino.ROT_0, Tetromino.ROT_270, Tetromino.ROT_180, Tetromino.ROT_90];
 	static SPAWN_TILES = [{ x: -1, y: 1, t: 27 }, { x: 0, y: 0, t: 27 }, { x: 1, y: 0, t: 27 }, { x: -1, y: 0, t: 27 }];
 }/* "I"
 0000
 */
-class Hero extends Tetramino {
-    static ROTATIONS = [Tetramino.ROT_0, Tetramino.ROT_270];
+class Hero extends Tetromino {
+    static ROTATIONS = [Tetromino.ROT_0, Tetromino.ROT_270];
     static SPAWN_TILES = [{ x: -1, y: 0, t: 20 }, { x: 0, y: 0, t: 21 }, { x: 1, y: 0, t: 21 }, { x: 2, y: 0, t: 22 }];
 
     get isHorizontal() {
@@ -421,7 +421,7 @@ class Hero extends Tetramino {
     }
 
     rotate(clockwise, skip) {
-        Tetramino.prototype.rotate.call(this, clockwise, skip);
+        Tetromino.prototype.rotate.call(this, clockwise, skip);
         //have to orient the tile types along with the piece since the end cap
         //tile textures are orientation-dependent in the Hero piece
         for (var i = 0; i < this.tiles.length; i++) {
@@ -1612,7 +1612,8 @@ class GameScene extends Scene {
                             this.lines += clearRows.length;
                             this.level = Math.max(this.startLevel, Math.floor(this.lines / 10));
                         } else {
-                            this.lines -= Math.max(clearRows.length, 0);
+                            this.lines -= clearRows.length;
+                            this.lines = Math.max(this.lines, 0);
                             if (this.lines <= 0) {
                                 //end the game
                                 this.gameComplete = true;

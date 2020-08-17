@@ -1,3 +1,6 @@
+/**
+ * select game type and music
+ */
 class GameMenuScene extends Scene {
     constructor(context) {
         super(context);

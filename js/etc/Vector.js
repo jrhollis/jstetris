@@ -8,9 +8,6 @@ class Vector {
     static add(t1, t2) {
         return { x: t1.x + t2.x, y: t1.y + t2.y };
     }
-    static distance(t1, t2) {
-        return Math.sqrt(Math.pow(t1.x - t2.x, 2) + Math.pow(t1.y - t2.y, 2));
-    }
     static inverse(v) {
         return { x: -v.x, y: -v.y };
     }

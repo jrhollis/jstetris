@@ -1,3 +1,6 @@
+/**
+ * player selection scene... only 1 player works
+ */
 class TitleScene extends Scene {
     constructor(context) {
         super(context);
@@ -11,9 +14,9 @@ class TitleScene extends Scene {
 
     tick() {
         var keyPress = Input.readKeyPress();
+        //make sure sound is loaded before continuing on
         if (keyPress == 13 && this.soundLoaded) { //enter
             Sound.stop('intro');
-            // SceneManager.replaceScene(new GameMenuScene(this.context));
             SceneManager.replaceScene(SceneManager.GameMenuScene);
             return;
         }

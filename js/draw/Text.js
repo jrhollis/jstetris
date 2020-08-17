@@ -1,4 +1,5 @@
 class Text extends Sprite {
+    //mirrors the layout of text in the sprite sheet
     static MAP = [
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ.-x ",
         '0123456789_suha!'

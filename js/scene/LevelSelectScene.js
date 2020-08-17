@@ -1,3 +1,6 @@
+/**
+ * select the level for A and B type games and high for B type
+ */
 class LevelSelectScene extends Scene {
     constructor(context, type) {
         super(context);

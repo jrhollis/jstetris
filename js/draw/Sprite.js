@@ -1,3 +1,6 @@
+/**
+ * things that move in the game
+ */
 class Sprite {
     constructor(scene, dx, dy, w, h, sx, sy) {
         this.scene = scene;

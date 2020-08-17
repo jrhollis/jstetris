@@ -23,7 +23,6 @@ class SceneManager {
     }
 
     static update() {
-        Input.watch();
         var scene = this.currentScene();
         if (scene) {
             scene.tick();

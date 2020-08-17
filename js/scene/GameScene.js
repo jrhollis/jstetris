@@ -20,8 +20,11 @@ row clear points
 
 class GameScene extends Scene {
 
+    //piece type class defs. used in randomizer
     static PIECES = [OrangeRicky, BlueRicky, Hero, Smashboy, ClevelandZ, RhodeIslandZ, Teewee];
-    static DELAY_AUTO_SHIFT = [1, 22, 8]; //delay 1 frame, then 22, then 9 for all others
+    
+    //delay auto shift frames-- when holding a key down, delay 1 frame, then 22, then 9 for all others
+    static DELAY_AUTO_SHIFT = [1, 22, 8]; 
 
     constructor(context, gameType, level, high) {
         super(context);
@@ -30,13 +33,15 @@ class GameScene extends Scene {
         this.startLevel = level;
         this.level = level;
         this.high = high;
+        //set up UI for different game types
         if (this.gameType == 'A') {
+            //a-type
             this.lines = 0;
             this.linesText = new Text(this, "0", 17 * 8, 10 * 8, 'right');
             this.levelText = new Text(this, "" + this.level, 17 * 8, 7 * 8, 'right');
             this.scoreText = new Text(this, "0", 18 * 8, 3 * 8, 'right');
         } else {
-            // if b-type game, fill high*2 rows with garbage
+            //b-type
             // need 25 lines counting down
             this.lines = 25;
             this.linesText = new Text(this, "0", 17 * 8, 10 * 8, 'right');
@@ -51,32 +56,46 @@ class GameScene extends Scene {
             4: 0,   //tetris
             5: 0 //hard drops
         }
+
+        //set up flags and counters
         this.canHardDrop = true;
         this.score = 0;
-        this.currentPiece = this.chooseRandomPiece();
-        this.currentPiece.x = 4 * 8;
-        this.currentPiece.y = 1 * 8;
-        this.previewPiece = this.chooseRandomPiece();
-        this.onDeckPiece = this.pieceRandomizer();
         this.gravityTickCtr = 0;
-        this.dasIndex = 0;  //delay auto shift pointer
-        this.dasFrameCtr = 0;
         this.endGameTimer = new Timer();
         this.rowClearTimer = new Timer();
         this.curtainTimer = new Timer();
+        this.resetDas();
+
+        //initiate pieces
+        this.previewPiece = this.chooseRandomPiece();
+        this.onDeckPiece = this.chooseRandomPiece();
+        this.releasePreviewPiece();
+
     }
 
+    /**
+     * resets the delay auto shift counters
+     */
+    resetDas() {
+        this.dasIndex = 0;  //delay auto shift pointer
+        this.dasFrameCtr = 0;
+    }
+
+    /**
+     * just pick some rando pieces at the beginning of the game to prime the GB tetris randomizer
+     */
     chooseRandomPiece() {
         var choice = Math.floor(Math.random() * 7);
         return new GameScene.PIECES[choice](this, 14 * 8, 14 * 8);
     }
 
-    //the implementation of the tetris for GB randomizer... I think
+    /**
+     * the implementation of the tetris for GB randomizer... I think
+     */
     pieceRandomizer() {
         var choice,
-            chances = 3,
             attempt = 0;
-        while (attempt < chances) {
+        while (attempt < 3) {
             //randomly choose a class of piece type to spawn next
             choice = Math.floor(Math.random() * 7);
             var currentIndex = GameScene.PIECES.indexOf(this.currentPiece.constructor),
@@ -94,7 +113,10 @@ class GameScene extends Scene {
         return piece;
     }
 
-    //drops the preview piece, puts on deck to preview, and chooses a new piece to put on deck
+
+    /**
+     * drops the preview piece, puts on deck to preview, and chooses a new piece to put on deck
+     */
     releasePreviewPiece() {
         this.currentPiece = this.previewPiece;
         this.currentPiece.tileOrigin = {x: 4, y: 1};
@@ -103,7 +125,11 @@ class GameScene extends Scene {
         this.onDeckPiece = this.pieceRandomizer();
     }
 
-    //checks the DAS to see if a piece should move this frame. also kills the hard drop
+
+    /**
+     * checks the DAS to see if a piece should move this frame. also kills the hard drop
+     * @param {*} direction 
+     */
     shiftPiece(direction) {
         if (this.dasFrameCtr == GameScene.DELAY_AUTO_SHIFT[this.dasIndex]) {
             this.dasIndex = Math.min(++this.dasIndex, 2);
@@ -117,7 +143,9 @@ class GameScene extends Scene {
     }
 
 
-    //start game over process. raise the block curtain
+    /**
+     * start game over process. raise the block curtain
+     */
     lose() {
         //start curtain cover/reveal
         this.losing = true;
@@ -213,21 +241,23 @@ class GameScene extends Scene {
         //game ending curtain animation stuff
         this.curtainTimer.tick();
         if (this.curtain >= 0 || this.losing) {
-            switch (this.curtainStatus) {
-                case 'cover':
-                    this.board.curtainCover(17 - this.curtain);
-                    this.curtain++;
-                    break;
+            if (this.curtainStatus == 'cover') {
+                this.board.curtainCover(17 - this.curtain);
+                this.curtain++;
             }
             return;
         }
 
+        //game is done, stop other updates
         if (this.gameComplete) {
             this.gameOver();
             return;
         }
+
+        //if made it this far, make sure the music is playing
         Sound.playBGMusic();
 
+        //enter key pauses the game
         if (keyPress == 13) {
             Sound.stopBGMusic();
             Sound.playOnce('PauseGame');
@@ -235,13 +265,14 @@ class GameScene extends Scene {
             return;
         }
 
+        //read keyboard input and move pieces
         if (Input.isKeyDown(37)) {
             this.shiftPiece(Vector.LEFT);
         } else if (Input.isKeyDown(39)) {
             this.shiftPiece(Vector.RIGHT);
         } else if (Input.isKeyDown(40) && this.canHardDrop) {
-            this.dasFrameCtr = 0;
-            this.dasIndex = 0;
+            //reset auto shift counters
+            this.resetDas();
             //hard drop piece drops a row every 3 frames
             if (!this.hardDrop) {
                 this.gravityTickCtr = 0;
@@ -249,35 +280,33 @@ class GameScene extends Scene {
                 this.hardDrop = this.currentPiece.tileOrigin.y;
             }
         } else {
-            this.dasFrameCtr = 0;
-            this.dasIndex = 0;
+            //reset auto shift counters
+            this.resetDas();
             //hard drop stopped
             delete this.hardDrop;
             if (!Input.isKeyDown(40)) {
                 this.canHardDrop = true;
             }
         }
-        //piece rotation controls  a and q
+
+        //piece rotation controls  a and s
         if (keyPress == 65) {
             this.currentPiece.rotate(false);
-        } else if (keyPress == 81) {
+        } else if (keyPress == 83) {
             this.currentPiece.rotate(true);
         }
 
-        if (keyPress == 83) { //enter
-            Sound.stopBGMusic();
-            SceneManager.popScene();
-        } 
-
+        //toggle the piece preview
         if (keyPress == 16) {
-            this.hidePreviewPiece = !this.hidePreviewPiece
+            this.hidePreviewPiece = !this.hidePreviewPiece;
         }
 
+        //counter for piece dropping. when it reaches the current gravity value, drop the piece one row
         this.gravityTickCtr++;
         if (this.gravityTickCtr == this.gravity) {
             //make the piece fall
             this.gravityTickCtr = 0;
-            //collision detect with board
+            //collision detect with board, returns -1 if game is lost
             var clearRows = this.currentPiece.fall();
             if (clearRows) {
                 //lock in place
@@ -295,6 +324,7 @@ class GameScene extends Scene {
                     this.score += hardDistance;
                     delete this.hardDrop;
                 }
+                //if still holding the down key after a row clear don't hard drop the next piece, make player release down key first
                 this.canHardDrop = false
                 //did the lock result in a row clear? clearRows is an array with cleared row indexes
                 if (clearRows.length) {
@@ -302,14 +332,18 @@ class GameScene extends Scene {
                     //this sound includes the piece lock sfx
                     (clearRows.length == 4)?Sound.playOnce('Tetris'):Sound.playOnce('RowClear'); 
                     this.rowClearTimer.start(77, () => {
+                        //update scoring and take note of level before score is applied
                         this.scoring[clearRows.length]++;
                         var oldLevel = this.level;
                         this.score += this.getPoints(clearRows.length);
                         if (this.gameType == 'A') {
+                            //a-type, add cleared rows to total
                             this.lines += clearRows.length;
                             this.level = Math.max(this.startLevel, Math.floor(this.lines / 10));
                         } else {
-                            this.lines -= Math.max(clearRows.length, 0);
+                            //b-type game subtracts cleared rows from total
+                            this.lines -= clearRows.length;
+                            this.lines = Math.max(this.lines, 0);
                             if (this.lines <= 0) {
                                 //end the game
                                 this.gameComplete = true;
@@ -319,16 +353,18 @@ class GameScene extends Scene {
                                 setTimeout(() => {Sound.playOnce('Win');}, 500);
                             }
                         }
+                        //clear the rows and send out the next piece
                         this.board.clearRows(clearRows);
                         this.releasePreviewPiece();
                         Sound.playOnce('RowDrop', () => {
-                            //on to a new level
+                            //if leveled up, play the sound
                             if (oldLevel != this.level) {
                                 Sound.playOnce('LevelUp');
                             }
                         });
                     });
                 } else {
+                    //no rows cleared this time, drop next piece
                     this.releasePreviewPiece();
                     Sound.forcePlay('PieceLock');
                 }
@@ -337,6 +373,9 @@ class GameScene extends Scene {
     }
 
 
+    /**
+     * draw stuff
+     */
     draw() {
         Scene.prototype.draw.call(this);
 
@@ -354,6 +393,9 @@ class GameScene extends Scene {
         if (this.previewPiece && !this.hidePreviewPiece) this.previewPiece.draw();
     }
 
+    /**
+     * count up total score
+     */
     getTotalScore() {
         var multiplier = this.gameType=='A'?1:(this.level+1),
             single = this.scoring[1] * 40 * multiplier,
@@ -364,53 +406,20 @@ class GameScene extends Scene {
         return single + double + triple + tetris + drops;
     }
 
+    /**
+     * points awarded for row clears
+     * @param {*} rows 
+     */
     getPoints(rows) {
         return [40,100,300,1200][rows-1] * (this.level+1);
     }
 
+    /**
+     * how fast the pieces fall based on the current level
+     */
     get gravity() {
-        if (this.hardDrop) return 3;
-        switch (this.level) {
-            case 0:
-                return 53;
-            case 1:
-                return 49;
-            case 2:
-                return 45;
-            case 3:
-                return 41;
-            case 4:
-                return 37;
-            case 5:
-                return 33;
-            case 6:
-                return 28;
-            case 7:
-                return 22;
-            case 8:
-                return 17;
-            case 9:
-                return 11;
-            case 10:
-                return 10;
-            case 11:
-                return 9;
-            case 12:
-                return 8;
-            case 13:
-                return 7;
-            case 14:
-            case 15:
-                return 6;
-            case 16:
-            case 17:
-                return 5;
-            case 18:
-            case 19:
-                return 4;
-            default:
-                return 3;
-        }
+        var gravity = [53,49,45,41,37,33,28,22,17,11,10,9,8,7,6,6,5,5,4,4];
+        if (this.hardDrop || this.level >= gravity.length) return 3;
+        return gravity[this.level];
     }
-
 }

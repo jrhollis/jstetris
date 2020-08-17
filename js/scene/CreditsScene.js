@@ -1,3 +1,6 @@
+/**
+ * opening copyright scene
+ */
 class CreditsScene extends Scene {
     constructor(context) {
         super(context);

@@ -2,7 +2,7 @@ cat \
 js/draw/Sprite.js \
 js/draw/Text.js \
 js/draw/Board.js \
-js/draw/pieces/Tetramino.js \
+js/draw/pieces/Tetromino.js \
 js/draw/pieces/RhodeIslandZ.js \
 js/draw/pieces/ClevelandZ.js \
 js/draw/pieces/Teewee.js \
