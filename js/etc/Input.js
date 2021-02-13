@@ -15,18 +15,18 @@ class Input {
             return false;
         }
 
-        if (e.keyCode == 32) {
-            pauseGame = !pauseGame;
-            e.preventDefault();
-            return false;
-        }
-        if (e.keyCode == 70) {
-            pauseGame = true;
-            //render next frame
-            SceneManager.update();
-            e.preventDefault();
-            return false;
-        }
+        // if (e.keyCode == 32) {
+        //     pauseGame = !pauseGame;
+        //     e.preventDefault();
+        //     return false;
+        // }
+        // if (e.keyCode == 70) {
+        //     pauseGame = true;
+        //     //render next frame
+        //     SceneManager.update();
+        //     e.preventDefault();
+        //     return false;
+        // }
         // console.log(e.keyCode)
         Input.keyDown = true;
     }

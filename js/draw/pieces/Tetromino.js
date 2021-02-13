@@ -57,7 +57,7 @@ class Tetromino extends Sprite {
      * get the piece's original orientation (SPAWN_TILES) and apply rotation
      * matrix to it
      * @param {*} clockwise 
-     * @param {*} reverting - if true, don't do a collision detection
+     * @param {*} reverting - if true, undoing an invalid move, don't do a collision detection
      */
     rotate(clockwise, reverting) {
         var rotations = this.constructor.ROTATIONS,
@@ -96,6 +96,7 @@ class Tetromino extends Sprite {
      * move a piece left or right on the grid and do horizontal collision detection.
      * if the piece hits something, reverse the move
      * @param {*} direction left or right
+     * @param {*} reverting - if true, undoing an invalid move, don't do a collision detection
      */
     move(direction, reverting) {
         this.x += direction.x * 8;

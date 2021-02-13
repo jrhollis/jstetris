@@ -93,16 +93,18 @@ class Board extends Sprite {
      * @return array of rows to clear or -1 if game is over
      */
     lock(piece) {
+        var gameOver = 0;
         //place tiles in grid
         piece.tiles.forEach(t => {
             var cell = Vector.add(piece.tileOrigin, t);
             //if this cell is already occupied, then it means the game's over
             if (cell.y < 0 || this.grid[cell.y][cell.x]) {
-                return -1;
+                gameOver = -1;
             }
             //copy the tile type as the cell's value
             this.grid[cell.y][cell.x] = t.t;
         });
+        if (gameOver) return gameOver;
 
         //if line(s), drop all rows -  could just check the rows where the piece locked and up, but just do the whole board for simplicity
         var clearRows = [];

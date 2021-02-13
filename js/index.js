@@ -1,3 +1,7 @@
+//debugging pauses- not in-game pause
+var pauseGame = false,
+    wasPaused = false;
+
 //load resources (sprite sheets)
 var RESOURCE = {
     sprites: document.createElement('img'),
@@ -69,5 +73,3 @@ SceneManager.ALevelSelectScene = new LevelSelectScene(context, 'A');
 SceneManager.BLevelSelectScene = new LevelSelectScene(context, 'B');
 SceneManager.pushScene(creditsScene);
 
-var pauseGame = false,
-    wasPaused = false;
