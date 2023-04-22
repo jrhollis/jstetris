@@ -4,12 +4,41 @@ class Sound {
     static mute = false;
 
     static initialize(cb) {
+        if (this.initialized) return;
+        this.initialized = true;
+        //safari polyfill
+        if (!window.AudioContext && window.webkitAudioContext) {
+            var oldFunc = webkitAudioContext.prototype.decodeAudioData;
+            webkitAudioContext.prototype.decodeAudioData = function (arraybuffer, cb) {
+                return new Promise((resolve, reject) => {
+                    // cb.call(this, arraybuffer, resolve, reject);
+                    oldFunc.call(this, arraybuffer, cb, reject);
+                });
+            }
+        }
         var AudioContext = window.AudioContext || window.webkitAudioContext;
         this.context = new AudioContext();
-        this.loadSound('res/sfx_lo.ogg').then(buffer => {
+        this.unlockAudioContext(this.context);
+        this.loadSound('res/sfx_lo.mp3').then(buffer => {
             this.sounds = buffer
             cb.call(this);
         });
+    }
+
+    static unlockAudioContext(audioCtx) {
+        if (audioCtx.state === 'suspended') {
+            var events = ['touchstart', 'touchend', 'mousedown', 'keydown'];
+            var unlock = function unlock() {
+                events.forEach(function (event) {
+                    document.body.removeEventListener(event, unlock)
+                });
+                audioCtx.resume();
+            };
+
+            events.forEach(function (event) {
+                document.body.addEventListener(event, unlock, false)
+            });
+        }
     }
 
     //list of currently running sounds. used for stopAll()
